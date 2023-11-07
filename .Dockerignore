@@ -1,0 +1,10 @@
+# python
+.python
+
+# virtual environment
+.venv
+.env
+venv/
+
+# docker
+.docker
