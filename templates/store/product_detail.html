@@ -102,15 +102,24 @@
             <div class="d-flex align-items-center mb-4 pt-2">
               <div class="input-group quantity mr-3" style="width: 130px;">
                 <div class="input-group-btn">
-                  <button class="btn btn-primary btn-minus"><i class="fa fa-minus"></i></button>
                 </div>
-                <input type="text" class="form-control bg-secondary border-0 text-center" value="1" />
-                <div class="input-group-btn">
+                {% if single_product.stock <= 0 %}
+                  <input type="text" class="form-control bg-secondary border-0 text-center" value="0" />
+                {% else %}
+                  <button class="btn btn-primary btn-minus"><i class="fa fa-minus"></i></button>
+                  <input type="text" class="form-control bg-secondary border-0 text-center" value="1" />
                   <button class="btn btn-primary btn-plus"><i class="fa fa-plus"></i></button>
+                {% endif %}
+                <div class="input-group-btn">
                 </div>
               </div>
-              {% comment %} {% if sigle_product  %}{% endif %} {% endcomment %}
-              <button class="btn btn-primary px-3"><i class="fa fa-shopping-cart mr-1"></i> Add To Cart</button>
+              {% if single_product.stock <= 0 %}
+              <h5 class="out-of-stock">
+                😔 اتمام موجودی ❌
+              </h5>
+            {% else %}
+              <button class="btn btn-primary px-3"><i class="fa fa-shopping-cart mr-1"></i> اضافه کردن به سبد خرید</button>
+            {% endif %}
             </div>
             <div class="d-flex pt-2">
               <strong class="text-dark mr-2">Share on:</strong>

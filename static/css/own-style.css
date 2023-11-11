@@ -1,0 +1,44 @@
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1%;
+  }
+.section-title {
+    font-size: 1.5em;
+    font-weight: bold;
+    margin-right: auto;
+  }
+.btn-view-all {
+    border: 2px solid #c3ff00;
+    background-color: transparent;
+    color: #00aaff;
+    padding: 0.5em 1em;
+    text-decoration: none;
+    display: inline-block;
+    cursor: pointer;
+    border-radius: 2em;
+    transition: background-color 0.3s, color 0.3s; /* افکت انتقالی نرم */
+    font-weight : bold
+  }
+.btn-view-all:hover {
+    border: 2px solid rgb(8, 0, 255)00;
+    background-color: #ffd900; /* رنگ پس‌زمینه به آبی تغییر می‌کند */
+    color: rgb(255, 255, 255); /* رنگ متن به سفید تغییر می‌کند */
+  }
+.divider {
+    flex-grow: 1;
+    border-top: 2px solid #ccc;
+    margin: 0 1em;
+  }
+
+.out-of-stock {
+    color: #d9534f; /* رنگ قرمز برای نشان دادن اتمام موجودی */
+    font-weight: bold !important; /* فونت ضخیم برای ایجاد تأکید */
+    background-color: #f2dede; /* رنگ پس‌زمینه ملایم برای تضاد با متن */
+    padding: 8px; /* فضای داخلی برای نمای بهتر */
+    border-radius: 5px; /* گرد کردن گوشه‌ها */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* سایه‌ی نرم برای برجستگی */
+    display: inline-block; /* اطمینان از قرار گرفتن به درستی در محیط اطراف */
+    margin: 10px 0; /* فضای بیرونی برای جداسازی از سایر المان‌ها */
+  }

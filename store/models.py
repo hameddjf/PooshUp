@@ -1,6 +1,6 @@
 from django.db import models
 from category.models import Category
-
+from django.urls import reverse
 # Create your models here.
 class Product(models.Model):
     title           = models.CharField(max_length=50 ,unique = True)
@@ -21,7 +21,8 @@ class Product(models.Model):
     def discount_price(self):
         return self.price *(1-(self.discount / 100))
 
-    
+    def get_url(self):
+        return reverse('products_detail' , args=[self.category.slug , self.slug])
 
     class Meta:
         verbose_name = ("محصول")
