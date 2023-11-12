@@ -16,9 +16,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path , include
-from main.views import home
-from django.conf.urls.static import static
 from django.conf import settings
+from django.conf.urls.static import static
+
+from category.views import home
 
 # app_name = 'online_shop'
 urlpatterns = [
@@ -26,5 +27,6 @@ urlpatterns = [
     path('' , home , name='home'),
 
     path('store/' , include('store.urls')),
+    path('cart/' , include('carts.urls')),
 
 ] + static(settings.MEDIA_URL , document_root=settings.MEDIA_ROOT)

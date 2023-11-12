@@ -12,3 +12,6 @@ copy .\app \app
 
 WORKDIR ./app
 
+RUN pip install --upgrade pip && \
+    pip install requirements.txt && \
+    pip install requirements.dev.txt && \
