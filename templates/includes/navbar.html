@@ -14,8 +14,15 @@
         <div class="btn-group">
           <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown">حساب من</button>
           <div class="dropdown-menu dropdown-menu-right">
+
+            <a href="{% url 'account:login_page' %}">
             <button class="dropdown-item" type="button">ورود</button>
-            <button class="dropdown-item" type="button">ثبت نام</button>
+          </a>
+
+            <a href="{% url 'account:register_page' %}">
+              <button class="dropdown-item" type="button">ثبت نام</button>
+            </a>
+
           </div>
         </div>
         <div class="btn-group mx-2">

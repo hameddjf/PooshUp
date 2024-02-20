@@ -1,0 +1,27 @@
+{% if messages %}
+    {% for message in messages %}
+    <div class='message-container alert alert-{{ message.tags }}' role='alert'>
+        <button type='button' class='close' data-dismiss='alert'> <span aria-hidden='true' class='close-right'>&times;</span> </button>
+        {% if message.level == DEFAULT_MESSAGE_LEVEL.ERROR %} توجه : {% endif %}
+        {{ message }}
+    </div>
+    {% endfor %}
+    <script>
+        var displayDuration = 3000; // 4 ثانیه نمایش پیام
+        var fadeOutDuration = 1000; // 1 ثانیه برای محو شدن پیام
+
+        // تنها یک تابع setTimeout را به کار ببرید.
+        setTimeout(function(){
+            $('.message-container').fadeOut(fadeOutDuration, function() {
+                // بعد از محو شدن پیام‌ها، کاربر را به صفحه‌ی login_page منتقل کنید.
+                window.location.href = "{% url 'account:login_page' %}";
+            });
+        }, displayDuration);
+    </script>
+    <style>
+        .close {
+            float: left;
+            margin-top: 10px; /* فاصله 10 پیکسلی از بالا اضافه می‌کند */
+        }
+    </style>
+{% endif %}

@@ -1,0 +1,113 @@
+
+{% load widget_tweaks %}
+{% load static %}
+<!DOCTYPE html>
+<!-- Coding by CodingLab | www.codinglabweb.com-->
+    <html lang="fa">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title> Responsive Login and Signup Form </title>
+
+        <!-- CSS -->
+        <link rel="stylesheet" href="{% static "accounts/css/style.css" %}">
+                
+        <!-- Boxicons CSS -->
+        <link href='https://unpkg.com/boxicons@2.1.2/css/boxicons.min.css' rel='stylesheet'>
+                        
+    </head>
+    <body>
+            <!-- login Form -->
+            <section class="container forms">
+    {% include "alerts/alerts.html" %}
+    
+    <div class="form signup">
+        <div class="form-content">
+            <header>ثبت نام</header>
+            <form class="" method = "POST" action="{% url 'account:register_page' %}" >
+                {% csrf_token %}
+
+                <div class="col-md-6 col-sm-6">
+                        <div class=""><span>*</span> نام</div>
+                        <div class="field input-field">
+                            {{ form.first_name|add_class:"input"|attr:"placeholder:نام شما"}}
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-sm-6">
+                        <div class=""><span>*</span> نام خوانوادگی</div>
+                        <div class="field input-field">
+                            {{ form.last_name|add_class:"input"|attr:"placeholder:نام خوانوادگی شما"}}
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-sm-6">
+                        <div class=""><span>*</span> نام کاربری</div>
+                        <div class="field input-field">
+                        {{ form.username|add_class:"input"|attr:"placeholder:نام کاربری شما"}}
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-sm-6">
+                        <div class=""><span>*</span> ایمیل </div>
+                        <div class="field input-field">
+                        {{ form.email|add_class:"input"|attr:"placeholder:ایمیل شما"}}
+                    </div>
+                </div>
+
+                <div class="col-md-12 col-sm-6">
+                        <div class=""><span>*</span> شماره تماس</div>
+                        <div class="field input-field">
+                            {{ form.phone_number|add_class:"input"|attr:"placeholder:شماره تماس شما"}}
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-sm-6">
+                        <div class=""><span>*</span> کلمه عبور</div>
+                        <div class="field input-field">
+                            {{ form.password|add_class:"password"|attr:"placeholder:کلمه عبور شما"}}
+                        <i class='bx bx-hide eye-icon'></i>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-sm-6">
+                    <div class=""><span>*</span> تکرار کلمه عبور</div>
+                    <div class="field input-field">
+                    {{ form.confirm_password|add_class:"password"|attr:"placeholder:تکرار کلمه عبور شما"}}
+                    <i class='bx bx-hide eye-icon'></i>
+                </div>
+                </div>
+
+                <div class="field button-field">
+                    <button>ثبت نام</button>
+                </div>
+            </form>
+
+            <div class="form-link">
+                <span>از قبل حساب کاربری دارید؟<a href="#" class="link login-link">ورود</a></span>
+            </div>
+        </div>
+
+        <div class="line"></div>
+
+        <div class="media-options">
+            <a href="#" class="field facebook">
+                <i class='bx bxl-facebook facebook-icon'></i>
+                <span>ورود از طریق فیسبوک</span>
+            </a>
+        </div>
+
+        <div class="media-options">
+            <a href="#" class="field google">
+                <img src="{% static "accounts/images/google.png" %}" alt="" class="google-img">
+                <span>ورود از طریق گوگل</span>
+            </a>
+        </div> 
+    </div>
+
+    </section>
+        <!-- JavaScript -->
+        <script src="{% static "accounts/js/script.js" %}"></script>
+    </body>
+</html>
