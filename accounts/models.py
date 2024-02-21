@@ -8,13 +8,17 @@ from django.utils.translation import gettext as _
 # create and manage of accounts
 class MyAccountManager(BaseUserManager):
     # create the normal user
-    def create_user(self, first_name, last_name, username, email, password=None):
+    def create_user(self, first_name, last_name, username,
+                    email, password=None):
         if not email:
             raise ValueError('email address is required !!')
         if not username:
             raise ValueError('username is required !!')
 
-        # Creating a new instance (user) using the data given as parameters to the function.
+        """
+        Creating a new instance (user)
+        using the data given as parameters to the function.
+        """
         user = self.model(
             # Converts incoming email to standard format : Lowercase letters
             email=self.normalize_email(email),
@@ -23,13 +27,18 @@ class MyAccountManager(BaseUserManager):
             last_name=last_name,
         )
 
-        # hashing the entering password / and next line / saving the hashed password in database
+        """
+        hashing the entering password
+        / and next line /
+        saving the hashed password in database
+        """
         user.set_password(password)
         user.save(using=self._db)
         return user
 
     # create the super user
-    def create_superuser(self, first_name, last_name, email, username, password=None):
+    def create_superuser(self, first_name, last_name, email,
+                         username, password=None):
         user = self.create_user(
             email=self.normalize_email(email),
             username=username,
@@ -48,14 +57,17 @@ class MyAccountManager(BaseUserManager):
 
 # Specify the specifications and behaviors of a user account
 class Account(AbstractBaseUser):
-    # in the `AbstractBaseUser` class, the `password` field is provided by default and its field name is already translated in the same class.
-
+    """
+        in the `AbstractBaseUser` class, the `password`
+        field is provided by default
+        and its field name is already translated in the same class.
+    """
     first_name = models.CharField(_("اسم"), max_length=50)
     last_name = models.CharField(_("نام خوانوادگی"), max_length=50)
 
     username = models.CharField(_("نام کاربری"), max_length=50, unique=True)
     email = models.EmailField(_("ادرس ایمیل"), max_length=254, unique=True)
-    # phone_number            = models.PhoneNumberField(_("شماره تماس") , unique = True)
+    # phone_number= models.PhoneNumberField(_("شماره تماس") , unique = True)
     phone_number = models.CharField(
         _("شماره تماس"), max_length=50, unique=True, blank=True, null=True)
 

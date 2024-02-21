@@ -80,7 +80,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'online_shop.wsgi.application'
 
 # COSTUMIZING USER MODEL AUTHONTICATION
-AUTH_USER_MODEL = 'user.User'
+AUTH_USER_MODEL = 'accounts.Account'
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
