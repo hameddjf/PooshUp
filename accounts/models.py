@@ -56,17 +56,24 @@ class Account(AbstractBaseUser):
     username = models.CharField(_("نام کاربری"), max_length=50, unique=True)
     email = models.EmailField(_("ادرس ایمیل"), max_length=254, unique=True)
     # phone_number            = models.PhoneNumberField(_("شماره تماس") , unique = True)
-    phone_number = models.CharField(_("شماره تماس"), max_length=50, unique=True, blank=True, null=True)
+    phone_number = models.CharField(
+        _("شماره تماس"), max_length=50, unique=True, blank=True, null=True)
 
-    ## required
+    # required
     # manager of account
     objects = MyAccountManager()
-    date_joined = models.DateTimeField(_("زمان ثبت نام"), auto_now=False, auto_now_add=True)
-    last_login = models.DateTimeField(_("اخرین ورود"), auto_now=False, auto_now_add=True)
-    is_admin = models.BooleanField(_("کاربر مورد نظر ادمین است ؟"), default=False)
-    is_staff = models.BooleanField(_("کاربر مورد نظر کارمند است ؟"), default=False)
-    is_active = models.BooleanField(_("کاربر مورد نظر فعال است ؟"), default=False)
-    is_superadmin = models.BooleanField(_("کاربر مورد نظر ادمین اصلی است ؟"), default=False)
+    date_joined = models.DateTimeField(
+        _("زمان ثبت نام"), auto_now=False, auto_now_add=True)
+    last_login = models.DateTimeField(
+        _("اخرین ورود"), auto_now=False, auto_now_add=True)
+    is_admin = models.BooleanField(
+        _("کاربر مورد نظر ادمین است ؟"), default=False)
+    is_staff = models.BooleanField(
+        _("کاربر مورد نظر کارمند است ؟"), default=False)
+    is_active = models.BooleanField(
+        _("کاربر مورد نظر فعال است ؟"), default=False)
+    is_superadmin = models.BooleanField(
+        _("کاربر مورد نظر ادمین اصلی است ؟"), default=False)
 
     # login with email instead user_name
     USERNAME_FIELD = 'email'
