@@ -1,0 +1,13 @@
+@font-face {
+  font-family: "Estedad";
+  src: url("../assets/fonts/estedad/Estedad-Regular.woff2");
+  src:
+    url("../assets/fonts/estedad/Estedad-Black.woff2") format("woff2"),
+    url("../assets/fonts/estedad/Estedad-Bold.woff2") format("woff2"),
+    url("../assets/fonts/estedad/Estedad-ExtraBold.woff2") format("woff2"),
+    url("../assets/fonts/estedad/Estedad-ExtraLight.woff2") format("woff2"),
+    url("../assets/fonts/estedad/Estedad-Medium.woff2") format("woff2"),
+    url("../assets/fonts/estedad/Estedad-Regular.woff2") format("woff2"),
+    url("../assets/fonts/estedad/Estedad-SemiBold.woff2") format("woff2"),
+    url("../assets/fonts/estedad/Estedad-Thin.woff2") format("woff2");
+}
