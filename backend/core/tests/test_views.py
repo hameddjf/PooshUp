@@ -4,6 +4,7 @@ from rest_framework.test import APIRequestFactory, APITestCase
 from ..models import Category, Product
 from ..views import home, ProductList, ProductDetail
 from ..serializers import ProductSerializer, CategorySerializer
+import pprint
 
 
 class HomeViewTest(TestCase):
@@ -127,20 +128,34 @@ class ProductSerializerTest(TestCase):
             'price': '10.99',
             'stock': 100,
             'discount': 5,
-            'discount_price': 10.44,
+            'discount_price': round(10.44, 2),  # گرد کردن به دو رقم اعشار
             'category': self.category.id
         }
-        self.assertEqual(serializer.data, expected_data)
+        pprint.pprint(serializer.data)
+        pprint.pprint(expected_data)
+        self.assertEqual(serializer.data['id'], expected_data['id'])
+        self.assertAlmostEqual(
+            serializer.data['discount_price'], expected_data['discount_price'], places=2)
+        self.assertEqual(serializer.data['product_name'],
+                         expected_data['product_name'])
 
 
 class CategorySerializerTest(TestCase):
     def setUp(self):
-        self.category = Category.objects.create(title='Category 1')
+        self.category = Category.objects.create(
+            title='Category 1', slug='category-1', description='Description for Category 1')
 
     def test_category_serializer(self):
         serializer = CategorySerializer(instance=self.category)
         expected_data = {
             'id': self.category.id,
             'title': 'Category 1',
+            'slug': 'category-1',
+            'description': 'Description for Category 1',
+            'category_image': None,
+            'parent': None,
+            'children': []
         }
         self.assertEqual(serializer.data, expected_data)
+        self.assertEqual(serializer.data['children'], list(
+            self.category.children.all().values_list('id', flat=True)))

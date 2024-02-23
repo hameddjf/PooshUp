@@ -14,6 +14,9 @@ class ProductSerializer(serializers.ModelSerializer):
 
 
 class CategorySerializer(serializers.ModelSerializer):
+    slug = serializers.SlugField(required=True)
+    description = serializers.CharField(required=True)
+
     class Meta:
         model = Category
         fields = '__all__'
