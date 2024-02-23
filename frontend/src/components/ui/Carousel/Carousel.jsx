@@ -1,6 +1,10 @@
+/* eslint-disable no-unused-vars */
 import hero_1 from "../../../assets/images/hero/hero-1.jpg";
 import hero_2 from "../../../assets/images/hero/hero-2.jpg";
 import hero_3 from "../../../assets/images/hero/hero-3.jpg";
+import hero_4 from "../../../assets/images/hero/hero-4.jpg";
+import hero_5 from "../../../assets/images/hero/hero-5.jpg";
+import hero_6 from "../../../assets/images/hero/hero-6.jpg";
 
 import {
   Navigation,
@@ -39,13 +43,13 @@ function Carousel() {
           <CarouselNext />
         </div>
         <SwiperSlide>
-          <img src={hero_1} alt="slider image" />
+          <img src={hero_4} alt="slider image" />
         </SwiperSlide>
         <SwiperSlide>
-          <img src={hero_2} alt="slider image" />
+          <img src={hero_5} alt="slider image" />
         </SwiperSlide>
         <SwiperSlide>
-          <img src={hero_3} alt="slider image" />
+          <img src={hero_6} alt="slider image" />
         </SwiperSlide>
         <div className="absolute -right-7 top-1/2 z-30 -translate-y-16 md:-right-2 md:-translate-y-24">
           <CarouselPrev />
