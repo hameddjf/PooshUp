@@ -40,8 +40,8 @@ function Navbar() {
         {/* animate-[slideIn_0.4s_ease-in-out] */}
         {/* Menu */}
         <div
-          className={`${isMenuOpen ? "translate-x-full" : "-translate-x-full"} w-screenbg-white/50 fixed
-           right-full top-0 z-40 h-screen backdrop-blur-md transition-all duration-500`}
+          className={`${isMenuOpen ? "translate-x-full" : "-translate-x-full"} fixed right-full top-0
+           z-40 h-screen w-screen bg-white/50 backdrop-blur-md transition-all duration-500`}
         >
           <div className="p-4">
             <div className="flex w-full items-center justify-between">
@@ -72,7 +72,7 @@ function Navbar() {
       </nav>
 
       {/* Desktop Nav */}
-      <nav className="fixed right-0 top-0 hidden h-[80px] w-screen px-4 shadow md:block lg:px-12">
+      <nav className="fixed right-0 top-0 z-40 hidden h-[80px] w-screen bg-white px-4 shadow md:block lg:px-12">
         <div className="pagecontainer mt-2">
           <div className=" flex h-[60px] items-center justify-between gap-8 lg:gap-16">
             <h1>Logo</h1>
