@@ -1,3 +1,22 @@
+body {
+  /* text-align: justify;  */
+  text-align-last: inherit; 
+
+}
+.navbar-nav {
+  margin-left: initial !important;
+}
+.post-meta {
+  text-align: left;
+}
+
+/* .mb-4, .my-4 {
+  direction: rtl !important;
+}  */
+
+.dropdown-menu {
+  text-align: end !important;
+}
 .section-header {
     display: flex;
     justify-content: space-between;

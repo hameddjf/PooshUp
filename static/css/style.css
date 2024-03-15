@@ -60,7 +60,8 @@ body {
   font-weight: 400;
   line-height: 1.5;
   color: #6C757D;
-  text-align: left;
+  /* direction: rtl; */
+  /* text-align: right; */
   background-color: #F5F5F5;
 }
 
@@ -1874,7 +1875,7 @@ pre code {
 
 .form-control {
   display: block;
-  width: 100%;
+  /* width: 100%; */
   height: calc(1.5em + 0.75rem + 2px);
   padding: 0.375rem 0.75rem;
   font-size: 1rem;
@@ -7588,6 +7589,7 @@ button.bg-dark:focus {
 .pt-5,
 .py-5 {
   padding-top: 3rem !important;
+  direction: rtl;
 }
 
 .pr-5,
@@ -9165,6 +9167,7 @@ button.bg-dark:focus {
 
 .text-left {
   text-align: left !important;
+  direction: rtl;
 }
 
 .text-right {

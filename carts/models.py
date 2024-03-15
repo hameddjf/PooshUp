@@ -1,5 +1,7 @@
 from django.db import models
-from store.models import Product
+from django.utils.translation import gettext_lazy as _
+
+from store.models import Product, Variation
 # Create your models here.
 
 
@@ -24,12 +26,15 @@ class CartItem(models.Model):
     quantity = models.IntegerField()
     is_active = models.BooleanField(default=True)
 
+    variations = models.ManyToManyField(
+        Variation, verbose_name=_("واریانت ها"), blank=True)
+
+    def sub_total(self):
+        return self.product.price * self.quantity
+
     class Meta:
         verbose_name = ("کالا سبد خرید")
         verbose_name_plural = ("کالاهای سبد خرید")
 
     def __str__(self):
-        return self.product
-
-    # def get_absolute_url(self):
-    #     return reverse("_detail", kwargs={"pk": self.pk})
+        return str(self.product)

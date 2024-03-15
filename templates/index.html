@@ -68,7 +68,13 @@
                     <img class="img-fluid w-100" src="{{product.image.url}}" alt="" />
                   </a>
                   <div class="product-action">
-                    <a class="btn btn-outline-dark btn-square" href=""><i class="fa fa-shopping-cart"></i></a>
+                    
+                    {% if product.stock >= 1 %}
+                      <a class="btn btn-outline-dark btn-square" href="{% url "cart:add_to_cart_page" product.id %}"><i class="fa fa-shopping-cart"></i></a>
+                    {% else %}
+                      <a class="btn btn-outline-dark btn-square"><i class="fa fa-shopping-cart"></i></a>
+                    {% endif %}
+
                     <a class="btn btn-outline-dark btn-square" href=""><i class="far fa-heart"></i></a>
                     <a class="btn btn-outline-dark btn-square" href=""><i class="fa fa-sync-alt"></i></a>
                     <a class="btn btn-outline-dark btn-square" href="{{ product.get_url }}"><i class="fa fa-search"></i></a>
