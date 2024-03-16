@@ -14,6 +14,9 @@ from django.core.mail import EmailMessage
 from .forms import Registration_form
 from .models import Account
 
+from carts.models import Cart, CartItem
+from carts.views import _cart_id
+
 # Create your views here.
 
 
@@ -74,9 +77,32 @@ def login(request):
         user = auth.authenticate(email=email, password=password)
 
         if user is not None:
+            try:
+                print('sdf')
+                cart_id = _cart_id(request)
+                print(cart_id)
+                cart = Cart.objects.get(cart_id=cart_id)
+                print('Cart object:', cart)
+                is_cart_item_exists = CartItem.objects.filter(
+                    cart=cart).exists()
+                print(is_cart_item_exists)
+
+                if is_cart_item_exists:
+                    print('hell in')
+
+                    cart_item = CartItem.objects.filter(cart=cart,)
+
+                    for item in cart_item:
+                        print('why in')
+
+                        item.user = user
+                        item.save()
+            except Cart.DoesNotExist:
+                # خطای مورد نظر برای وقتی که سبد خرید وجود ندارد
+                print(f'هیچ سبد خریدی با cart_id "{cart_id}" پیدا نشد.')
             auth.login(request, user)
             # messages.success(request , 'شما وارد شدید .')
-            return redirect(request, 'account:profile_page')
+            return redirect('account:profile_page')
         else:
             messages.error(request, 'رمز عبور خود را بازنشانی کنید .')
             return redirect('account:login_page')

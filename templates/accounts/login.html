@@ -1,100 +1,69 @@
-
 {% load static %}
 <!DOCTYPE html>
-<!-- Coding by CodingLab | www.codinglabweb.com-->
-    <html lang="fa">
-    <head>
-        <meta charset="UTF-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title> Responsive Login and Signup Form </title>
-
-        <!-- CSS -->
-        <link rel="stylesheet" href="{% static "accounts/css/style.css" %}">
-                
-        <!-- Boxicons CSS -->
-        <link href='https://unpkg.com/boxicons@2.1.2/css/boxicons.min.css' rel='stylesheet'>
-                        
-    </head>
-    <body>
-            <!-- login Form -->
-            <section class="container forms">
-
-{% if request.GET.command == 'verification' %}
-
-<main class="wrapper default">
-    <div class="container">
-        <div class="row">
-            <div class="main-content alert alert-info text-center  col-12 col-md-7 col-lg-5 mx-auto" role='alert' style='max-width :1024px; margin-top:100px;'>
-            ارسال شد لطفا انرا تایید کنید . [{{request.GET.email}}] ایمیلی به ادرس ایمیلتان 
-
-            </br></br>
-            اگر حسابتان را تایید کردید میتوانید وارد شوید : {% url "{{account:login_page}}" %}
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Responsive Login and Signup Form</title>
+    <!-- CSS -->
+    <link rel="stylesheet" href="{% static 'accounts/css/style.css' %}">
+    <!-- Boxicons CSS -->
+    <link href="https://unpkg.com/boxicons@2.1.2/css/boxicons.min.css" rel='stylesheet'>
+</head>
+<body>
+    <!-- login Form -->
+    <section class="container forms">
+    {% if request.GET.command == 'verification' %}
+        <div class="wrapper default">
+            <div class="alert alert-info text-center mx-auto" role='alert' style='max-width: 1024px; margin-top: 100px;'>
+                ارسال شد لطفا آن را تایید کنید. [{{ request.GET.email }}] ایمیلی به آدرس ایمیلتان
+                <br><br>
+                اگر حسابتان را تایید کردید می‌توانید وارد شوید: <a href="{% url 'account:login_page' %}">ورود</a>
             </div>
         </div>
-    </div>
-</main>
-
-{% else %}
-
+    {% else %}
         <div class="form login">
             <div class="form-content">
                 <header>ورود</header>
                 {% include "alerts/alerts.html" %}
-                <form class="" action='{% url "account:login_page" %}' method='POST'>
+                <form action="{% url 'account:login_page' %}" method='POST'>
                     {% csrf_token %}
-
-                    <div class="col-md-12 col-sm-12">
-                        <div class=""><span>*</span> ایمیل کاربری شما</div>
-                        <div class="field input-field">
-                        <input type="email" placeholder=" ایمیل کاربری شما" name='email' class="input">
+                    <div class="field input-field">
+                        <input type="email" placeholder="ایمیل کاربری شما" name='email' class="input">
                     </div>
-                </div>
-
-                <div class="col-md-12 col-sm-12">
-                        <div class="field input-field">
-                            <input type="password" placeholder=" کلمه عبور شما" name='password' class="password">
-                            <i class='bx bx-hide eye-icon'></i>
-                        </div>
+                    <div class="field input-field">
+                        <input type="password" placeholder="کلمه عبور شما" name='password' class="password">
+                        <i class='bx bx-hide eye-icon'></i>
                     </div>
-                </div>
-
                     <div class="form-link">
-                        <a href="{% url "account:forgot_password_page" %}" class="forgot-pass">رمز عبورتان را فراموش کرده اید ؟</a>
+                        <a href="{% url 'account:forgot_password_page' %}" class="forgot-pass">رمز عبورتان را فراموش کرده اید؟</a>
                     </div>
-
                     <div class="field button-field">
-                        <button type='submit' class="btn big_btn btn-main-masai">ورود  </button>
+                        <button type='submit' class="btn big_btn btn-main-masai">ورود</button>
                     </div>
                 </form>
-
                 <div class="form-link">
-                    <span>کاربر جدید هستید ؟ <a href="{% url "account:register_page" %}" class="link signup-link">ثبت نام</a></span>
+                    <span>کاربر جدید هستید؟ <a href="{% url 'account:register_page' %}" >ثبت نام</a></span>
                 </div>
             </div>
+            <div class="line"></div>
+            <div class="media-options">
+                <a href="#" class="field facebook">
+                    <i class='bx bxl-facebook facebook-icon'></i>
+                    <span>ورود از طریق فیسبوک</span>
+                </a>
+            </div>
+            <div class="media-options">
+                <a href="#" class="field google">
+                    <img src="{% static 'accounts/images/google.png' %}" alt="" class="google-img">
+                    <span>ورود از طریق گوگل</span>
+                </a>
+            </div>
         </div>
-
-
-        <div class="line"></div>
-
-        <div class="media-options">
-            <a href="#" class="field facebook">
-                <i class='bx bxl-facebook facebook-icon'></i>
-                <span>ورود از طریق فیسبوک</span>
-            </a>
-        </div>
-
-        <div class="media-options">
-            <a href="#" class="field google">
-                <img src="{% static "accounts/images/google.png" %}" alt="" class="google-img">
-                            <span>ورود از طریق گوگل</span>
-            </a>
-        </div>
-
-        </div>
-        </section>
-{% endif %}
-        <!-- JavaScript -->
-        <script src="{% static "accounts/js/script.js" %}"></script>
-    </body>
+    {% endif %}
+    </section>
+    <!-- JavaScript -->
+    <script src="{% static 'accounts/js/script.js' %}"></script>
+</body>
 </html>

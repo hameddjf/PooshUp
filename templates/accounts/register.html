@@ -1,113 +1,234 @@
-
 {% load widget_tweaks %}
 {% load static %}
+
 <!DOCTYPE html>
 <!-- Coding by CodingLab | www.codinglabweb.com-->
-    <html lang="fa">
-    <head>
-        <meta charset="UTF-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title> Responsive Login and Signup Form </title>
+<html lang="fa">
 
-        <!-- CSS -->
-        <link rel="stylesheet" href="{% static "accounts/css/style.css" %}">
-                
-        <!-- Boxicons CSS -->
-        <link href='https://unpkg.com/boxicons@2.1.2/css/boxicons.min.css' rel='stylesheet'>
-                        
-    </head>
-    <body>
-            <!-- login Form -->
-            <section class="container forms">
-    {% include "alerts/alerts.html" %}
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Responsive Login and Signup Form</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="{% static "accounts/css/style.css" %}">
+
+    <!-- Boxicons CSS -->
+    <link href='https://unpkg.com/boxicons@2.1.2/css/boxicons.min.css' rel='stylesheet'>
+
+</head>
+<style>
+    .container {
+        height: 155vh;
+        direction: rtl;
+    }
+    .form {
+        max-width: 40%;}
+    .form-content {
+        max-width: 600px; /* حداکثر عرض فرم */
+        margin: 0 auto; /* قرارگیری فرم در وسط صفحه */
+        padding: 20px; /* فضای داخلی اطراف فرم */
+        background-color: #fff; /* رنگ پس‌زمینه فرم */
+        border-radius: 8px; /* گوشه‌های گرد برای فرم */
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* سایه‌ای ملایم برای فرم */
+    }
+
+
     
-    <div class="form signup">
-        <div class="form-content">
-            <header>ثبت نام</header>
-            <form class="" method = "POST" action="{% url 'account:register_page' %}" >
-                {% csrf_token %}
+    .container {
+        align-items: flex-start;
+    }
+    
 
-                <div class="col-md-6 col-sm-6">
-                        <div class=""><span>*</span> نام</div>
-                        <div class="field input-field">
-                            {{ form.first_name|add_class:"input"|attr:"placeholder:نام شما"}}
+    
+
+    form {
+        display: flex;
+        flex-wrap: wrap; /* اجازه می‌دهد فیلد‌ها در صورت نیاز به خط بعدی بروند */
+        {% comment %} gap: 15px; /* فاصله بین فیلد‌ها */ {% endcomment %}
+    }
+
+    .col-md-6, .col-md-12 {
+        width: 100%;
+        padding: 10px;
+    }
+    
+    
+    .eye-icon {
+        direction: rtl !important;
+        right: 90% !important;
+    }
+
+
+    .form-content {
+        max-width: 800px;
+        margin: auto;
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        background-color: #f9f9f9;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    .form-header {
+        text-align: center;
+        margin-bottom: 20px;
+        font-size: 24px;
+        font-weight: bold;
+    }
+    
+    .form-row {
+        display: flex;
+        flex-wrap: wrap;
+        margin-bottom: 15px;
+    }
+    
+    .form-group {
+        margin-bottom: 15px;
+        padding-right: 15px;
+        padding-left: 15px;
+        flex: 1; /* فیلدها به طور خودکار در دسترس هستند */
+    }
+    
+    .form-group label {
+        display: block;
+    }
+    
+    .form-control {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+    
+    .btn-primary {
+        color: #fff;
+        background-color: #007bff;
+        border-color: #007bff;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    
+    .btn-primary:hover {
+        background-color: #0056b3;
+        border-color: #004085;
+    }
+    
+    .form-link {
+        text-align: center;
+        margin-top: 20px;
+    }
+    
+    .link.login-link {
+        color: #007bff;
+        text-decoration: none;
+    }
+    
+    .link.login-link:hover {
+        text-decoration: underline;
+    }
+    
+    @media (max-width: 768px) {
+        .form-row {
+            flex-direction: column;
+        }
+    
+        .form-group {
+            padding-right: 0;
+            padding-left: 0;
+        }
+    }
+    </style>
+<body>
+    <!-- login Form -->
+    <section class="container forms">
+        {% include "alerts/alerts.html" %}
+
+        <div class="form login">
+            <div class="form-content">
+                <header>ثبت نام</header>
+                <form class="" method="POST" action="{% url 'account:register_page' %}">
+                    {% csrf_token %}
+
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="first_name"><span>*</span> نام</label>
+                            {{ form.first_name|add_class:"form-control"|attr:"id:first_name,placeholder:نام شما"}}
+                        </div>
                     </div>
-                </div>
-
-                <div class="col-md-6 col-sm-6">
-                        <div class=""><span>*</span> نام خوانوادگی</div>
-                        <div class="field input-field">
-                            {{ form.last_name|add_class:"input"|attr:"placeholder:نام خوانوادگی شما"}}
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="first_name"><span>*</span> نام خوانوادگی</label>
+                            {{ form.first_name|add_class:"form-control"|attr:"id:first_name,placeholder:نام خوانوادگی شما"}}
+                        </div>
                     </div>
-                </div>
-
-                <div class="col-md-6 col-sm-6">
-                        <div class=""><span>*</span> نام کاربری</div>
-                        <div class="field input-field">
-                        {{ form.username|add_class:"input"|attr:"placeholder:نام کاربری شما"}}
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="first_name"><span>*</span> نام کاربری</label>
+                            {{ form.first_name|add_class:"form-control"|attr:"id:first_name,placeholder:نام کاربری شما"}}
+                        </div>
                     </div>
-                </div>
-
-                <div class="col-md-6 col-sm-6">
-                        <div class=""><span>*</span> ایمیل </div>
-                        <div class="field input-field">
-                        {{ form.email|add_class:"input"|attr:"placeholder:ایمیل شما"}}
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="first_name"><span>*</span> شماره تماس</label>
+                            {{ form.first_name|add_class:"form-control"|attr:"id:first_name,placeholder:شماره تماس شما"}}
+                        </div>
                     </div>
-                </div>
-
-                <div class="col-md-12 col-sm-6">
-                        <div class=""><span>*</span> شماره تماس</div>
-                        <div class="field input-field">
-                            {{ form.phone_number|add_class:"input"|attr:"placeholder:شماره تماس شما"}}
+                    <div class="form-row col-md-12 col-sm-6">
+                        <div class="form-group col-md-6">
+                            <label for="first_name"><span>*</span> ایمیل</label>
+                            {{ form.first_name|add_class:"form-control"|attr:"id:first_name,placeholder:ایمیل شما"}}
+                        </div>
                     </div>
-                </div>
 
-                <div class="col-md-6 col-sm-6">
+                    <div class="col-md-6 col-sm-6">
                         <div class=""><span>*</span> کلمه عبور</div>
                         <div class="field input-field">
                             {{ form.password|add_class:"password"|attr:"placeholder:کلمه عبور شما"}}
-                        <i class='bx bx-hide eye-icon'></i>
+                            <i class='bx bx-hide eye-icon'></i>
+                        </div>
                     </div>
-                </div>
 
-                <div class="col-md-6 col-sm-6">
-                    <div class=""><span>*</span> تکرار کلمه عبور</div>
-                    <div class="field input-field">
-                    {{ form.confirm_password|add_class:"password"|attr:"placeholder:تکرار کلمه عبور شما"}}
-                    <i class='bx bx-hide eye-icon'></i>
-                </div>
-                </div>
+                    <div class="col-md-6 col-sm-6">
+                        <div class=""><span>*</span> تکرار کلمه عبور</div>
+                        <div class="field input-field">
+                            {{ form.confirm_password|add_class:"password"|attr:"placeholder:تکرار کلمه عبور شما"}}
+                            <i class='bx bx-hide eye-icon'></i>
+                        </div>
+                    </div>
 
-                <div class="field button-field">
-                    <button>ثبت نام</button>
-                </div>
-            </form>
 
-            <div class="form-link">
-                <span>از قبل حساب کاربری دارید؟<a href="#" class="link login-link">ورود</a></span>
+                    <div class="field button-field">
+                        <button>ثبت نام</button>
+                    </div>
+                </form>
+
+                <div class="form-link">
+                    <span>از قبل حساب کاربری دارید؟<a href="{% url "account:login_page" %}" >ورود</a></span>
+                </div>
             </div>
+            <div class="line"></div>
+
+            <div class="media-options">
+                <a href="#" class="field facebook">
+                    <i class='bx bxl-facebook facebook-icon'></i>
+                    <span>ورود از طریق فیسبوک</span>
+                </a>
+            </div>
+    
+            <div class="media-options">
+                <a href="#" class="field google">
+                    <img src="{% static "accounts/images/google.png" %}" alt="" class="google-img">
+                    <span>ورود از طریق گوگل</span>
+                </a>
+            </div> 
         </div>
-
-        <div class="line"></div>
-
-        <div class="media-options">
-            <a href="#" class="field facebook">
-                <i class='bx bxl-facebook facebook-icon'></i>
-                <span>ورود از طریق فیسبوک</span>
-            </a>
-        </div>
-
-        <div class="media-options">
-            <a href="#" class="field google">
-                <img src="{% static "accounts/images/google.png" %}" alt="" class="google-img">
-                <span>ورود از طریق گوگل</span>
-            </a>
-        </div> 
-    </div>
-
     </section>
-        <!-- JavaScript -->
-        <script src="{% static "accounts/js/script.js" %}"></script>
-    </body>
+
+    <!-- JavaScript -->
+    <script src="{% static "accounts/js/script.js" %}"></script>
+</body>
+
 </html>

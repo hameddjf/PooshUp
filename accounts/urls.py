@@ -8,7 +8,7 @@ urlpatterns = [
     path('login/', login, name=("login_page")),
     path('logout/', logout, name=("logout_page")),
     path('profile/', profile, name=("profile_page")),
-    path('', profile, name=("profile_page")),
+    # path('', profile, name=("profile_page")),
     path('forgot-password/', forgot_password, name=("forgot_password_page")),
     path('reset-password/', reset_password, name=("reset_password_page")),
 

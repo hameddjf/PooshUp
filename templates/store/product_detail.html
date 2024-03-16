@@ -27,7 +27,7 @@
         </div>
 
 
-        <form action='{% url "cart:add_to_cart_page" single_product.id %}' method='POST'class="col-lg-7 h-auto mb-30">
+        <form action="{% url 'cart:add_to_cart_page' single_product.id %}" method='POST' class="col-lg-7 h-auto mb-30">
           {% csrf_token %}
           <article >
             <div class="h-100 bg-light p-30">
@@ -53,39 +53,28 @@
               {% comment %} <h3 class="font-weight-semi-bold mb-4">${{single_product.price}}</h3> {% endcomment %}
               <p class="mb-4">{{ single_product.concise }}</p>
               <hr>
-              <div class="d-flex mb-4">
-                <strong class="text-dark mr-3">رنگ :</strong>
-                <form>
-                  <select name='color' class='form-control'  required>
-                    <option value='' disabled selected>انتخاب رنگ</option>
-                    {% for i in single_product.variation_set.colors %}
-                      <option value='{{i.variation_value | lower}}'>{{i.variation_value | capfirst}}</option>
-                    {% endfor %}
-                  </select>
-                </form>
-              </div>
-              <div class="d-flex mb-4">
-                <strong class="text-dark mr-3">اندازه :</strong>
-                <form>
-                  <select name='size' class='form-control' style='width: auto;' required>
-                    <option value='' disabled selected>انتخاب اندازه</option>
-                    {% for i in single_product.variation_set.sizes %}
-                      <option value='{{i.variation_value | lower}}'>{{i.variation_value | capfirst}}</option>
-                    {% endfor %}
-                  </select>
-                </form>
-              </div>
+                <div class="d-flex mb-4">
+                  <strong class="text-dark mr-3">رنگ :</strong>
+                    <select name='color' class='form-control'  required>
+                      <option value='' disabled selected>انتخاب رنگ</option>
+                      {% for i in single_product.variation_set.colors %}
+                        <option value='{{i.variation_value | lower}}'>{{i.variation_value | capfirst}}</option>
+                      {% endfor %}
+                    </select>
+                </div>
+                <div class="d-flex mb-4">
+                  <strong class="text-dark mr-3">اندازه :</strong>
+                    <select name='size' class='form-control' style='width: auto;' required>
+                      <option value='' disabled selected>انتخاب اندازه</option>
+                      {% for i in single_product.variation_set.sizes %}
+                        <option value='{{i.variation_value | lower}}'>{{i.variation_value | capfirst}}</option>
+                      {% endfor %}
+                    </select>
+                </div>
               <div class="d-flex align-items-center mb-4 pt-2">
                 <div class="input-group quantity mr-3" style="width: 130px;">
                   <div class="input-group-btn">
                   </div>
-                  {% comment %} {% if single_product.stock <= 0 %}
-                    <input type="text" class="form-control bg-secondary border-0 text-center" value="0" />
-                  {% else %}
-                    <button class="btn btn-primary btn-minus"><i class="fa fa-minus"></i></button>
-                    <input type="text" class="form-control bg-secondary border-0 text-center" value="1" />
-                    <button class="btn btn-primary btn-plus"><i class="fa fa-plus"></i></button>
-                  {% endif %} {% endcomment %}
                   <div class="input-group-btn">
                   </div>
                 </div>
@@ -94,8 +83,6 @@
                   😔 اتمام موجودی ❌
                 </h5>
               {% else %}
-
-                {% comment %} <a href='{% url "cart:cart_page" %}' class="btn btn-info px-3"><i class="fa fa-eye mr-1"></i><span class='text'>مشاهده سبد خرید</span></a> {% endcomment %}
                     <button type='submit' class="btn btn-primary px-3"><i class="fa fa-shopping-cart mr-1"></i> اضافه کردن به سبد خرید</button>
               {% endif %}
               </div>
