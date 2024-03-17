@@ -4,7 +4,7 @@ from .views import _cart_id
 
 def counter(request):
     cart_count = 0
-    if 'admin' is request.path:
+    if str('admin') is request.path:
         return {}
     else:
         try:

@@ -46,54 +46,51 @@
             <tbody class="align-middle">
 
               {% for cart_item in cart_items %}
-              <form action="{% url 'cart:add_to_cart_page' cart_item.product.id  %}" method='POST'>
-                {% csrf_token %}
-              <tr>
-                <td class="align-middle">
-                  <img src="{{cart_item.product.image.url}}" alt="" style="width: 50px;" /> 
-                  <figcaption class='info'>
-                    <a href='{{ cart_item.product.get_url }}' class='text-muted small'>
-                      <strong class="colorful">{{cart_item.product.title}}</strong>
-                    </a>
-                    <p class='text-muted small'>
-                      {% if cart_item.variations.all %}
-                        {% for item in cart_item.variations.all %}
-                            {{ item.variation_category | capfirst }} : {{ item.variation_value | capfirst }}<br>
-                        {% endfor %}
-                      {% endif %}
-                    </p>
-                  </figcaption>
-                  
-                </td>
-                <td class="align-middle">${{cart_item.product.price}}</td>
-                <td class="align-middle">
+                  <tr>
+                    <td class="align-middle">
+                      <img src="{{cart_item.product.image.url}}" alt="" style="width: 50px;" /> 
+                      <figcaption class='info'>
+                        <a href='{{ cart_item.product.get_url }}' class='text-muted small'>
+                          <strong class="colorful">{{cart_item.product.title}}</strong>
+                        </a>
+                        <p class='text-muted small'>
+                          {% if cart_item.variations.all %}
+                            {% for item in cart_item.variations.all %}
+                                {{ item.variation_category | capfirst }} : {{ item.variation_value | capfirst }}<br>
+                            {% endfor %}
+                          {% endif %}
+                        </p>
+                      </figcaption>
+                    </td>
+                    <td class="align-middle">${{cart_item.product.price}}</td>
+                    <td class="align-middle">
 
+                      {% comment %}  ی باگ میخورد ک برداشتمش ت دکمه بعلاوه quantity بخاطر کلاس  {% endcomment %}
+                      <div class="col"> 
+                        <div class="input-group mx-auto" style="width: 100px;" >
+                            <div class="input-group-btn">
+                            <a href="{% url 'cart:remove_from_cart_page' cart_item.product.id cart_item.id %}" class="btn btn-sm btn-primary btn-minus" type="button"> <i class="fa fa-minus"></i> </a>
+                            </div>
+                            <input type="text" class="form-control form-control-sm bg-secondary border-0 text-center"  value="{{cart_item.quantity}}">
+                            <div class="input-group-btn">
+                                <form action="{% url 'cart:add_to_cart_page' cart_item.product.id  %}" method='POST'>
+                                    {% csrf_token %}
+                                    {% for item in cart_item.variations.all  %}
+                                        <input type='hidden' name="{{item.variation_category |  lower}}" value="{{item.variation_value | capfirst}}">
+                                    {% endfor %}
+                                    <button class="btn btn-sm btn-primary btn-plus" type="submit" id="button-minus"> <i class="fa fa-plus"></i> </button>
+                                </form>
+                            </div>
+                        </div> <!-- input-group.// -->
 
-                  
-                  <div class="input-group quantity mx-auto" style="width: 100px;">
-                    <div class="input-group-btn">
-                      <a href="{% url 'cart:remove_from_cart_page' cart_item.product.id cart_item.id %}" type='button' class="btn btn-sm btn-primary btn-minus"><i class="fa fa-minus"></i></a>
-                    </div>
-                    <input type="text" class="form-control form-control-sm bg-secondary border-0 text-center" value="{{cart_item.quantity}}" />
-                      <div class="input-group-btn">
-                          {% for item in cart_item.variations.all %}
-                              <input type="hidden" name="{{ item.variation_category | lower }}" value="{{ item.variation_value | capfirst }}"/>
-                          {% endfor %}
-                          <button class="btn btn-sm btn-primary btn-plus" type="submit" ><i class="fa fa-plus"></i></button>                    
-                      </div>
-                  </div>
-                
-                
-                </td>
-                <td class="align-middle">${{cart_item.sub_total}}</td>
-                <td class="align-middle">
-                  <a href='{% url "cart:delete_cart_item_page" cart_item.product.id cart_item.id %}' onclick="return confirm('ایا مطمعئن هستین میخواهید این محصول را حذف کنید؟')" class="btn btn-sm btn-danger"><i class="fa fa-times"></i></a>
-                </td>
-              </tr>
-            </form>
-              
+                    </td>
+                    <td class="align-middle">${{cart_item.sub_total}}</td>
+                    <td class="align-middle">
+                      <a href='{% url "cart:delete_cart_item_page" cart_item.product.id cart_item.id %}' onclick="return confirm('ایا مطمعئن هستین میخواهید این محصول را حذف کنید؟')" class="btn btn-sm btn-danger"><i class="fa fa-times"></i></a>
+                    </td>
+                  </tr>
               {% endfor %}
-           
+
             </tbody>
           </table>
         </div>

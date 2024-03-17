@@ -17,6 +17,7 @@ from .models import Account
 from carts.models import Cart, CartItem
 from carts.views import _cart_id
 
+import requests
 # Create your views here.
 
 
@@ -78,31 +79,57 @@ def login(request):
 
         if user is not None:
             try:
-                print('sdf')
-                cart_id = _cart_id(request)
-                print(cart_id)
-                cart = Cart.objects.get(cart_id=cart_id)
-                print('Cart object:', cart)
+                cart = Cart.objects.get(cart_id=_cart_id(request))
                 is_cart_item_exists = CartItem.objects.filter(
-                    cart=cart).exists()
-                print(is_cart_item_exists)
-
+                    cart=cart,).exists()
                 if is_cart_item_exists:
-                    print('hell in')
-
                     cart_item = CartItem.objects.filter(cart=cart,)
 
+                    # getting the product variations by cart id
+                    product_variation = []
                     for item in cart_item:
-                        print('why in')
-
-                        item.user = user
-                        item.save()
+                        variation = item.variations.all()
+                        product_variation.append(list(variation))
+                    # get cart items from user to access his product variations
+                    cart_item = CartItem.objects.filter(
+                        user=user)
+                    # exsisting variations --> database
+                    # current variations --> product_varations
+                    # item id --> database
+                    existing_variation_list = []
+                    id = []
+                    for item in cart_item:
+                        existing_variation = item.variations.all()
+                        existing_variation_list.append(
+                            list(existing_variation))
+                        id.append(item.id)
+                    for product in product_variation:
+                        if product in existing_variation_list:
+                            index = existing_variation_list.index(product)
+                            item_id = id[index]
+                            item = CartItem.objects.get(id=item_id)
+                            item.quantity += 1
+                            item.user = user
+                            item.save()
+                        else:
+                            cart_item = CartItem.objects.filter(cart=cart)
+                            for item in cart_item:
+                                item.user = user
+                                item.save()
             except Cart.DoesNotExist:
-                # خطای مورد نظر برای وقتی که سبد خرید وجود ندارد
-                print(f'هیچ سبد خریدی با cart_id "{cart_id}" پیدا نشد.')
+                pass
             auth.login(request, user)
             # messages.success(request , 'شما وارد شدید .')
-            return redirect('account:profile_page')
+            url = request.META.get('HTTP_REFERER')
+            try:
+                query = requests.utils.urlparse(url).query
+                params = dict(x.split('=') for x in query.split('&'))
+                if 'next' in params:
+                    nextPage = params['next']
+                    return redirect(nextPage)
+            except:
+                return redirect('account:profile_page')
+
         else:
             messages.error(request, 'رمز عبور خود را بازنشانی کنید .')
             return redirect('account:login_page')
