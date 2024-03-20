@@ -25,7 +25,7 @@
 </style>
     <!-- Checkout Start -->
     <div class="direction row px-xl-5">
-        <form action='' method='POST'>
+        <form action="{% url 'order:place_order_page' %}" method='POST'>
             {% csrf_token %}
             <div class="row">
                 <div class="col-lg-8">
@@ -60,7 +60,7 @@
                             </div>
                             <div class="col-md-6 form-group">
                                 <label>آدرس تحویل</label>
-                                <input class="form-control" type="text" name='address_line_one' placeholder="123 Street" required/>
+                                <input class="form-control" type="text" name='address_line_1' placeholder="123 Street" required/>
                             </div>
                             <div class="col-md-3 form-group">
                                 <label>استان</label>
@@ -71,13 +71,17 @@
                                 <input class="form-control" type="text" name='city' placeholder="123 Street" required/>
                             </div>
                             <div class="col-md-3 form-group">
+                                <label>خیابان</label>
+                                <input class="form-control" type="text" name='street' placeholder="123 Street" required/>
+                            </div>
+                            <div class="col-md-3 form-group">
                                 <label>پلاک</label>
                                 <input class="form-control" type="text" name='tag' placeholder="123 Street" required/>
                             </div>
-                            <div class="col-md-3 form-group">
+                            {% comment %} <div class="col-md-3 form-group">
                                 <label>واحد</label>
                                 <input class="form-control" type="text" name='unit' placeholder="123 Street" required/>
-                            </div>
+                            </div> {% endcomment %}
                         </div>
                     </div>
                 </div>

@@ -1,0 +1,216 @@
+{% extends "base.html" %}
+{% load static %}
+{% block main %}
+
+<style>
+  img {
+    vertical-align: middle;
+    border-style: none;
+    float: left;
+  }
+  .colorful:nth-child(odd) {
+      color: dodgerblue;
+  }
+  
+  .colorful:nth-child(even) {
+      color: coral;
+  }
+
+  .direction {
+    direction: rtl; 
+    text-align: right; 
+    background-color: #f8f9fa; 
+    border: 1px solid #ddd; 
+    padding: 10px; 
+    border-radius: 5px;
+  }
+
+  .custom-label {
+    text-align: left; 
+    display: block;
+    margin-left: auto;
+    margin-right: auto; 
+    width: fit-content;
+  }
+
+.form-control {
+    width: 100%;}
+</style>
+<h4 class=" mb-10 text-center"> سفارش خود را بررسی کنید و پرداخت کنید</h4>
+    <!-- Cart Start -->
+      <div class="direction row px-xl-5">
+        <div class="col-lg-8 table-responsive mb-5">
+            <div class="card">
+                <div class="card-header">
+                    آدرس صورتحساب
+                </div>
+                <div class="card-body">
+                  <p class="card-text mb-0">نام و نام خوانوادگی: {{order.full_name}}</p>
+                  <p class='card-text mb-0'>ادرس تحویل: {{order.full_address}}</p>
+                  <p class='card-text mb-0'>ایمیل: {{order.email}}</p>
+                  <p class='card-text mb-0'>شماره تماس: {{order.phone}}</p>
+                  {% comment %} {% if order.order_note %}
+                      <b>Order Note:</b> {{order.order_note}}
+                  {% endif %} {% endcomment %}
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="card-header">
+                    روش پرداخت
+                </div>
+                <div class="card-body">
+                  <p class="card-text">زرین پال:</p>
+              </div>
+              </div>
+
+              <div class="card">
+                <div class="card-header">
+                    بررسی محصولات
+                </div>
+                  <div class="card-body">
+                      <table class="table table-light table-borderless table-hover text-center mb-0">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th>محصولات</th>
+                                <th>قیمت</th>
+                                <th>تعداد</th>
+                                <th>قیمت کل</th>
+                            </tr>
+                        </thead>
+                        <tbody class="align-middle">
+                            {% for cart_item in cart_items %}
+                                <tr>
+                                    <td class="align-middle">
+                                        <img src="{{cart_item.product.image.url}}" alt="" style="width: 50px;" /> 
+                                        <figcaption class='info'>
+                                            <a href='{{ cart_item.product.get_url }}' class='text-muted small'>
+                                                <strong class="colorful">{{cart_item.product.title}}</strong>
+                                            </a>
+                                            <p class='text-muted small'>
+                                                {% if cart_item.variations.all %}
+                                                    {% for item in cart_item.variations.all %}
+                                                        {{ item.variation_category | capfirst }} : {{ item.variation_value | capfirst }}<br>
+                                                    {% endfor %}
+                                                {% endif %}
+                                            </p>
+                                        </figcaption>
+                                    </td>
+                                    <td class="align-middle">${{cart_item.product.price}}</td>
+                                    <td class="align-middle">
+                                        <div class="input-group quantity mx-auto" style="width: 100px;">
+                                            <label class="custom-label">{{cart_item.quantity}}</label>
+                                        </div>
+                                    </td>
+                                    <td class="align-middle">${{cart_item.sub_total}}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+
+        </div>
+        <div class="col-lg-4">
+            <div class="input-group">
+              <input type="text" class="form-control border-0 p-4 floatformat : right" placeholder="کد کوپون" />
+              <div class="input-group-append">
+                <button class="btn btn-primary">اعمال کوپون</button>
+              </div>
+            </div>
+          <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-secondary pr-3">خلاصه سبد خرید</span></h5>
+          <div class="bg-light p-30 mb-5">
+            <div class="border-bottom pb-2">
+              <div class="d-flex justify-content-between mb-3">
+                <h6>قیمت کل</h6>
+                <h6>${{total}}</h6>
+              </div>
+              <div class="d-flex justify-content-between">
+                <h6 class="font-weight-medium">مالیات</h6>
+                <h6 class="font-weight-medium">${{tax}}</h6>
+              </div>
+            </div>
+            <div class="pt-2">
+              <div class="d-flex justify-content-between mt-2">
+                <h5>مجموع کل</h5>
+                <h5>${{grand_total}}</h5>
+              </div>
+              <a href="{% url "cart:checkout_page" %}" class="btn btn-block btn-primary font-weight-bold my-3 py-3"> پرداخت</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Cart End -->
+
+    <script>
+      function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+          const cookies = document.cookie.split(';');
+          for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+              cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+              break;
+            }
+          }
+        }
+        return cookieValue;
+      }
+    
+      var amount = parseFloat("{{ grand_total }}");
+      var url = "{% url 'payments' %}";
+      var csrfToken = getCookie('csrftoken');
+      var orderID = "{{ order.order_number }}";
+      var paymentMethod = 'PayPal';
+      var redirectUrl = "{% url 'order_complete' %}"
+    
+      paypal.Buttons({
+        // Style for button
+        style: {
+                    color:  'blue',
+                    shape:  'pill',
+                    label:  'pay',
+                    height: 40,
+            },
+    
+        // Set up the transaction
+        createOrder: function(data, actions) {
+          return actions.order.create({
+            purchase_units: [{
+              amount: {
+                value: amount
+              }
+            }]
+          });
+        },
+    
+        // Finalize the transaction
+        onApprove: function(data, actions) {
+          return actions.order.capture().then(function(details) {
+            $.ajax({
+              type: 'POST',
+              url: url,
+              data: {
+                'csrfmiddlewaretoken': "{{ csrf_token }}",
+                'orderID': orderID,
+                'transID': details.id,
+                'payment_method': paymentMethod,
+                'status': details.status,
+              },
+              success: function(response) {
+                data = response.data;
+                alert('Transaction completed by ' + details.payer.name.given_name + '!');
+                window.location.href = redirectUrl + '?order_number=' + data["order_number"] + '&payment_id=' + data["transID"];
+              },
+              error: function(response) {
+                error = response.error;
+                alert('تراکنش کامل شد، اما 1 خطا رخ داد: ' + e);
+              }
+            });
+          });
+        }
+      }).render('#paypal-button-container');
+    </script>
+{% endblock main %}
