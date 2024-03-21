@@ -77,3 +77,27 @@ class Variation(models.Model):
 
     def __str__(self):
         return str(self.product)
+
+
+class ReviewRating(models.Model):
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.CASCADE,
+        verbose_name=_("محصول")
+    )
+    user = models.ForeignKey('accounts.Account',
+                             on_delete=models.CASCADE, verbose_name=_("کاربر"))
+    subject = models.CharField(_("موضوع"), max_length=100, blank=True)
+    review = models.TextField(_("متن نظر"), max_length=500, blank=True)
+    rating = models.FloatField(_("امتیاز"),)
+    ip = models.CharField(_("ایپی"), max_length=20, blank=True)
+    status = models.BooleanField(_("وضعیت"), default=True)
+    created_at = models.DateTimeField(_("زمان ایجاد"), auto_now_add=True)
+    updated_at = models.DateTimeField(_("زمان بروزرسانی"), auto_now_add=True)
+
+    def __str__(self):
+        return self.subject
+
+    class Meta:
+        verbose_name = ("بررسی امتیاز")
+        verbose_name_plural = ("بررسی امتیازات")
