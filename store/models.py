@@ -1,6 +1,7 @@
 from django.db import models
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
+from django.db.models import Avg, Count
 
 from category.models import Category
 
@@ -27,6 +28,23 @@ class Product(models.Model):
     created_date = models.DateField(auto_now=False, auto_now_add=True)
     modified_date = models.DateTimeField(auto_now=True, auto_now_add=False)
     discount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+
+    def averageReview(self):
+        reviews = ReviewRating.objects.filter(
+            product=self, status=True).aggregate(average=Avg('rating'))
+        avg = 0
+        if reviews['average'] is not None:
+            avg = float(reviews['average'])
+            avg_rounded = round(avg, 2)
+        return avg_rounded
+
+    def countReview(self):
+        reviews = ReviewRating.objects.filter(
+            product=self, status=True).aggregate(count=Count('id'))
+        count = 0
+        if reviews['count'] is not None:
+            count = int(reviews['count'])
+        return count
 
     @property
     def discount_price(self):

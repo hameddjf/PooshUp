@@ -87,6 +87,9 @@ class Account(AbstractBaseUser):
     is_superadmin = models.BooleanField(
         _("کاربر مورد نظر ادمین اصلی است ؟"), default=False)
 
+    def full_name(self):
+        return f'{self.first_name} {self.last_name}'
+
     # login with email instead user_name
     USERNAME_FIELD = 'email'
     # required fields to login

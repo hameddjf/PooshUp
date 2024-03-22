@@ -7,7 +7,8 @@ from .models import Product, ReviewRating
 from .forms import ReviewForm
 
 from category.models import Category
-from carts.models import CartItem
+from carts.models import Cart, CartItem
+from orders.models import OrderProduct
 from carts.views import _cart_id
 # Create your views here.
 
@@ -48,16 +49,34 @@ def product_detail(request, category_slug, product_slug):
     try:
         single_product = Product.objects.get(
             category__slug=category_slug, slug=product_slug)
+        cart = Cart.objects.get(cart_id=_cart_id(request=request))
         in_cart = CartItem.objects.filter(
-            cart__cart_id=_cart_id(request), product=single_product).exists()
-    except Exception as e:
-        raise e
+            cart=cart,
+            product=single_product
+        ).exists()
+    except Exception:
+        cart = Cart.objects.create(
+            cart_id=_cart_id(request)
+        )
+    if request.user.is_authenticated:
+        try:
+            orderproduct = OrderProduct.objects.filter(
+                user=request.user, product_id=single_product.id).exists()
+        except Exception:
+            orderproduct = None
+    else:
+        orderproduct = None
+
+    reviews = ReviewRating.objects.filter(
+        product_id=single_product.id, status=True)
 
     context = {
         'single_product': single_product,
-        'in_cart': in_cart,
+        'in_cart': in_cart if 'in_cart' in locals() else False,
+        'orderproduct': orderproduct,
+        'reviews': reviews,
     }
-    return render(request, 'store/product_detail.html', context)
+    return render(request, 'store/product_detail.html', context=context)
 
 
 def search(request):
