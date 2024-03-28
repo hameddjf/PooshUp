@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+
+
+{% block main %}
+<style>
+    .direction {
+      direction: rtl; 
+      text-align: right; 
+      background-color: #f8f9fa; 
+      border: 1px solid #ddd; 
+      padding: 10px; 
+      border-radius: 5px;
+    }
+	.list-group {
+		display: contents;}
+    a {
+        color: #245aea;}
+</style>
+<section class="section-conten padding-y bg direction">
+
+{% include 'alerts/alerts.html' %}
+<div class="container">
+	<div class="row">
+	{% include 'includes/profile_sidebar.html' %}
+	<main class="col-md-9">
+		<article class="card">
+		<header class="card-header">
+			<strong class="d-inline-block mr-3">پروفایل خودت را ویرایش کن</strong>
+
+		</header>
+		<div class="card-body">
+			<div class="text-right">
+				<img src="{{userprofile.profile_picture.url}}" alt="Profile Picture" width="100" style="border-radius:50px;">
+			</div>
+			<div class="row">
+			<div class="col-md-12">
+				<form action="{% url 'account:edit_profile_page' %}" method="POST" enctype="multipart/form-data">
+					{% csrf_token %}
+					<div class="form-row">
+						<div class="form-group col-md-6">
+							<label>نام کوچک</label>
+							{{user_form.first_name}}
+						</div>
+						<div class="form-group col-md-6">
+							<label>نام خانوادگی</label>
+							{{user_form.last_name}}
+						</div>
+					</div>
+					<div class="form-row">
+						<div class="form-group col-md-6">
+							<label>شماره تلفن</label>
+							{{user_form.phone_number}}
+						</div>
+						<div class="form-group col-md-6">
+							<label>عکس پروفایل</label>
+							{{profile_form.profile_picture}}
+						</div>
+					</div>
+					<div class="form-group">
+						<label>ادرس تحویل</label>
+						{{profile_form.address_line_1}}
+					</div>
+					<div class="form-row">
+						<div class="form-group col-md-4">
+							<label>شهر</label>
+							{{profile_form.city}}
+						</div>
+						<div class="form-group col-md-4">
+							<label>استان</label>
+							{{profile_form.state}}
+						</div>
+					</div>
+					<input type="submit" value="ذخیره" class="btn btn-primary">
+				</form>
+			</div>
+
+			</div> <!-- row.// -->
+		</div> <!-- card-body .// -->
+
+		</article> <!-- order-group.// -->
+	</main>
+</div> <!-- row.// -->
+</div>
+
+
+</section>
+
+{% endblock %}

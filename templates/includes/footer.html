@@ -1,4 +1,5 @@
 <!-- Footer Start -->
+<footer>
 <div class="container-fluid bg-dark text-secondary mt-5 pt-5">
   <div class="row px-xl-5 pt-5">
     <div class="col-lg-4 col-md-12 mb-5 pr-3 pr-xl-5">
@@ -72,4 +73,22 @@
     </div>
   </div>
 </div>
-<!-- Footer End -->
+</footer><!-- Footer End -->
+{% comment %} برای زمانی ک نخوام کراسل عکس رو استفاده کنم بجاش لیست کامل عکسارو همراه عکس اصلی ببینم {% endcomment %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+  $(document).ready(function(){
+    $('.thumb a').click(function(e){
+      e.preventDefault();
+      var newImageSrc = $(this).attr("href");
+      // تغییر دادن منبع تصویر اصلی به منبع تصویر کلیک شده
+      $('#product-carousel .carousel-inner .carousel-item img').attr('src', newImageSrc);
+      // حذف کلاس active از تمام تصاویر کاروسل
+      $('#product-carousel .carousel-inner .carousel-item').removeClass('active');
+      // افزودن کلاس active به اولین تصویر کاروسل که همیشه تصویر اصلی است
+      $('#product-carousel .carousel-inner .carousel-item:first').addClass('active');
+    })
+  })
+</script>
+</body>
+</html>

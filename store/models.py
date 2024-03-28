@@ -119,3 +119,18 @@ class ReviewRating(models.Model):
     class Meta:
         verbose_name = ("بررسی امتیاز")
         verbose_name_plural = ("بررسی امتیازات")
+
+
+class ProductGallery(models.Model):
+    Product = models.ForeignKey(
+        Product, verbose_name=_("محصول"),
+        on_delete=models.CASCADE)
+    image = models.ImageField(
+        _("عکس"), upload_to='store/products', max_length=255)
+
+    def __str__(self):
+        return self.Product.title
+
+    class Meta:
+        verbose_name = _("گالری محصول")
+        verbose_name_plural = _("گالری محصولات")

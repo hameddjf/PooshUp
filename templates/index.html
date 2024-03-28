@@ -1,6 +1,27 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block main %}
+<style>
+
+  .direction {
+    direction: rtl; 
+    text-align: right; 
+    background-color: #f8f9fa; 
+    border: 1px solid #ddd; 
+    padding: 10px; 
+    border-radius: 5px;
+  }
+  .custom-label {
+      text-align: left; 
+      display: block;
+      margin-left: auto;
+      margin-right: auto; 
+      width: fit-content;
+    }
+
+  .form-control {
+      width: 100%;}
+</style>
   <!-- Carousel Start -->
   <div class="container-fluid mb-3">
     <div class="row px-xl-5">
@@ -92,12 +113,14 @@
                   <h6 class="text-muted ml-2"><del>${{product.price}}</del></h6>
                   {% endif %}
                 </div>
-                <div class="d-flex align-items-center justify-content-center mb-1">
-                  <small class="fa fa-star text-primary mr-1"></small>
-                  <small class="fa fa-star text-primary mr-1"></small>
-                  <small class="fa fa-star text-primary mr-1"></small>
-                  <small class="fa fa-star text-primary mr-1"></small>
-                  <small class="fa fa-star text-primary mr-1"></small>
+                <div class="rating-star " style='direction: ltr; text-align:center'>
+                  <span>
+                    <i class="fa fa-star{% if product.averageReview < 0.5 %}-o{% elif product.averageReview >= 0.5 and product.averageReview < 1 %}-half-o {% endif %}" aria-hidden="true"></i>
+                    <i class="fa fa-star{% if product.averageReview < 1.5 %}-o{% elif product.averageReview >= 1.5 and product.averageReview < 2 %}-half-o {% endif %}" aria-hidden="true"></i>
+                    <i class="fa fa-star{% if product.averageReview < 2.5 %}-o{% elif product.averageReview >= 2.5 and product.averageReview < 3 %}-half-o {% endif %}" aria-hidden="true"></i>
+                    <i class="fa fa-star{% if product.averageReview < 3.5 %}-o{% elif product.averageReview >= 3.5 and product.averageReview < 4 %}-half-o {% endif %}" aria-hidden="true"></i>
+                    <i class="fa fa-star{% if product.averageReview < 4.5 %}-o{% elif product.averageReview >= 4.5 and product.averageReview < 5 %}-half-o {% endif %}" aria-hidden="true"></i>
+                    </span>
                 </div>
                 <small>موجودی : ({{product.stock}}) عدد</small>
               </div>

@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+
+{% block main %}
+<style>
+
+    .direction {
+      direction: rtl; 
+      text-align: right; 
+      background-color: #f8f9fa; 
+      border: 1px solid #ddd; 
+      padding: 10px; 
+      border-radius: 5px;
+    }
+	.list-group {
+		display: contents;}
+    a {
+        color: #245aea;}
+</style>
+<section class="section-conten padding-y bg direction">
+
+{% include 'alerts/alerts.html' %}
+<div class="container">
+	<div class="row">
+	{% include 'includes/profile_sidebar.html' %}
+	<main class="col-md-9">
+		<article class="card">
+		<header class="card-header">
+			<strong class="d-inline-block mr-3">سابقه سفارش شما</strong>
+
+		</header>
+		<div class="card-body">
+			<div class="row">
+			<div class="col-md-12">
+				<table class="table table-hover">
+				  <thead>
+				    <tr>
+				      <th scope="col">سفارش #</th>
+				      <th scope="col">نام صورتحساب</th>
+				      <th scope="col">شماره تلفن</th>
+				      <th scope="col">تمام سفارشات</th>
+							<th scope="col">تاریخ</th>
+				    </tr>
+				  </thead>
+				  <tbody>
+						{% for order in orders %}
+				    <tr>
+				      <th scope="row"><a href="{% url 'account:order_detail_page' order.order_number %}">{{order.order_number}}</a></th>
+				      <td>{{order.full_name}}</td>
+				      <td>{{order.phone}}</td>
+				      <td>{{ order.order_total|floatformat:0 }}</td>
+							<td>{{order.created_at}}</td>
+				    </tr>
+				{% endfor %}
+
+				  </tbody>
+				</table>
+			</div>
+
+			</div> <!-- row.// -->
+		</div> <!-- card-body .// -->
+
+		</article> <!-- order-group.// -->
+	</main>
+</div> <!-- row.// -->
+</div>
+
+
+</section>
+
+{% endblock %}

@@ -86,8 +86,9 @@ class OrderProduct(models.Model):
         "کاربر"), on_delete=models.CASCADE)
     product = models.ForeignKey("store.Product", verbose_name=_(
         "محصول"), on_delete=models.CASCADE)
-    variation = models.ForeignKey("store.Variation", verbose_name=_(
-        "واریانت"), on_delete=models.CASCADE, blank=True)
+    variation = models.ManyToManyField("store.Variation",
+                                       verbose_name=_("واریانت"),
+                                       blank=True)
     # color = models.CharField(_(" رنگ"), max_length=50)
     # size = models.CharField(_(" اندازه"), max_length=50)
     quantity = models.IntegerField(_(" تعداد"),)
@@ -101,4 +102,4 @@ class OrderProduct(models.Model):
         verbose_name_plural = _("سفارش محصولات")
 
     def __str__(self):
-        return self.first_name
+        return str(self.user)

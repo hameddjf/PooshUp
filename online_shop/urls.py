@@ -23,9 +23,10 @@ from category.views import home
 
 # app_name = 'online_shop'
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', home, name='home'),
+    path('admin/', include('admin_honeypot.urls', namespace='admin_honeypot')),
+    path('securelogin/', admin.site.urls),
 
+    path('', home, name='home'),
     path('store/', include('store.urls')),
     path('cart/', include('carts.urls')),
     path('account/', include('accounts.urls')),

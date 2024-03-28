@@ -1,7 +1,7 @@
 # from django import forms
 # from django.db import IntegrityError
 from django.contrib import messages, auth
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.sites.shortcuts import get_current_site
 from django.contrib.auth.tokens import default_token_generator
@@ -11,11 +11,12 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.core.mail import EmailMessage
 # from django.http import HttpResponse
 
-from .forms import Registration_form
-from .models import Account
+from .forms import RegistrationForm, UserForm, UserProfileForm
+from .models import Account, UserProfile
 
 from carts.models import Cart, CartItem
 from carts.views import _cart_id
+from orders.models import Order, OrderProduct
 
 import requests
 # Create your views here.
@@ -23,7 +24,7 @@ import requests
 
 def register(request):
     if request.method == 'POST':
-        form = Registration_form(request.POST)
+        form = RegistrationForm(request.POST)
         # user valid
         if form.is_valid():
             username = form.cleaned_data['username']
@@ -65,7 +66,7 @@ def register(request):
             # Form is not valid
             return render(request, 'accounts/register.html', {'form': form})
     else:
-        form = Registration_form()
+        form = RegistrationForm()
 
     return render(request, 'accounts/register.html', {'form': form})
 
@@ -127,7 +128,7 @@ def login(request):
                 if 'next' in params:
                     nextPage = params['next']
                     return redirect(nextPage)
-            except:
+            except ValueError:
                 return redirect('account:profile_page')
 
         else:
@@ -163,7 +164,20 @@ def logout(request):
 
 @login_required(login_url='account:login_page')
 def profile(request):
-    return render(request, 'accounts/profile.html')
+    orders = Order.objects.filter(
+        user_id=request.user.id, is_ordered=True).order_by('-created_at')
+    orders_count = orders.count()
+
+    try:
+        userprofile = UserProfile.objects.get(user_id=request.user.id)
+    except UserProfile.DoesNotExist:
+        userprofile = None
+
+    context = {
+        'orders_count': orders_count,
+        'userprofile': userprofile,
+    }
+    return render(request, 'accounts/profile.html', context)
 
 
 def forgot_password(request):
@@ -229,3 +243,79 @@ def reset_password(request):
             return redirect('account:reset_password_page')
     else:
         return render(request, 'accounts/password-update.html')
+
+
+@login_required(login_url='account:login_page')
+def my_orders(request):
+    orders = Order.objects.filter(
+        user=request.user, is_ordered=True).order_by('-created_at')
+    context = {
+        'orders': orders,
+    }
+    return render(request, 'accounts/my_orders.html', context)
+
+
+@login_required(login_url='account:login_page')
+def edit_profile(request):
+    userprofile = get_object_or_404(UserProfile, user=request.user)
+    if request.method == 'POST':
+        user_form = UserForm(request.POST, instance=request.user)
+        profile_form = UserProfileForm(
+            request.POST, request.FILES, instance=userprofile)
+        if user_form.is_valid() and profile_form.is_valid():
+            user_form.save()
+            profile_form.save()
+            messages.success(request, 'مشخصات شما به روز شده است.')
+            return redirect('account:edit_profile_page')
+    else:
+        user_form = UserForm(instance=request.user)
+        profile_form = UserProfileForm(instance=userprofile)
+    context = {
+        'user_form': user_form,
+        'profile_form': profile_form,
+        'userprofile': userprofile,
+    }
+    return render(request, 'accounts/edit_profile.html', context)
+
+
+@login_required(login_url='account:login_page')
+def change_password(request):
+    if request.method == 'POST':
+        current_password = request.POST['current_password']
+        new_password = request.POST['new_password']
+        confirm_password = request.POST['confirm_password']
+
+        user = Account.objects.get(username__exact=request.user.username)
+
+        if new_password == confirm_password:
+            success = user.check_password(current_password)
+            if success:
+                user.set_password(new_password)
+                user.save()
+                # auth.logout(request)
+                messages.success(request, 'رمز عبور با موفقیت به روز شد.')
+                return redirect('account:change_password_page')
+            else:
+                messages.error(
+                    request, 'لطفا رمز عبور فعلی معتبر را وارد کنید')
+                return redirect('account:change_password_page')
+        else:
+            messages.error(request, 'رمز عبور مطابقت ندارد!')
+            return redirect('account:change_password_page')
+    return render(request, 'accounts/change_password.html')
+
+
+@login_required(login_url='account:login_page')
+def order_detail(request, order_id):
+    order_detail = OrderProduct.objects.filter(order__order_number=order_id)
+    order = Order.objects.get(order_number=order_id)
+    subtotal = 0
+    for i in order_detail:
+        subtotal += i.product_price * i.quantity
+
+    context = {
+        'order_detail': order_detail,
+        'order': order,
+        'subtotal': subtotal,
+    }
+    return render(request, 'accounts/order_detail.html', context)

@@ -109,3 +109,25 @@ class Account(AbstractBaseUser):
     # check the permissions for specific moduls         : its low level
     def has_module_perms(self, add_label):
         return True
+
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(Account, verbose_name=_(
+        "کاربر"), on_delete=models.CASCADE)
+    address_line_1 = models.CharField(_(" ادرس تحویل"), max_length=50)
+    profile_picture = models.ImageField(blank=True, upload_to='userprofile')
+    postal_code = models.CharField(_(" کد پستی"), max_length=50)
+    state = models.CharField(_(" استان"), max_length=50)
+    city = models.CharField(_("شهر "), max_length=50)
+    street = models.CharField(_("خیابان "), max_length=50)
+    tag = models.CharField(_(" پلاک"), max_length=50)
+
+    def __str__(self):
+        return self.user.first_name
+
+    def full_address(self):
+        return f'{self.address_line_1}'
+
+    class Meta:
+        verbose_name = 'پروفایل'
+        verbose_name_plural = 'پروفایل ها'
