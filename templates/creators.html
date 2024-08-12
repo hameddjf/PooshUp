@@ -1,0 +1,89 @@
+
+{% extends "base.html" %}
+{% load custom_tags %}
+{% block main %}
+<div class="container">
+  {% if creators %}
+      {% for creator in creators %}
+      <div class="profile">
+          <img src="{{ creator|get_profile_image }}" alt="Profile Picture" class="profile-image">
+          <h1 class="profile-name">{{ creator.first_name }} {{ creator.last_name }}</h1>
+          
+          <p class="profile-bio"></p>
+          <div class="social-links">
+              <a href="https://t.me/BN2_hm" class="social-link">تلگرام</a>
+              <a href="https://www.linkedin.com/in/hamed-moradi-aa8698304/" class="social-link">لینکدین</a>
+              <a href="mailto:{{ creator.email }}" class="social-link">ایمیل</a>
+          </div>
+      </div>
+      {% endfor %}
+  {% else %}
+      <p>هیچ کاربری پیدا نشد.</p>
+  {% endif %}
+</div>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+    
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        color: #333;
+        padding: 20px;
+    }
+    
+    .container {
+        max-width: 600px;
+        margin: 0 auto;
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+    }
+    
+    .profile {
+        text-align: center;
+    }
+    
+    .profile-image {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-bottom: 15px;
+    }
+    
+    .profile-name {
+        font-size: 24px;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+    
+    .profile-bio {
+        margin-bottom: 20px;
+        line-height: 1.5;
+    }
+    
+    .social-links {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+    }
+    
+    .social-link {
+        text-decoration: none;
+        background: #007bff;
+        color: white;
+        padding: 10px 15px;
+        border-radius: 5px;
+        transition: background 0.3s;
+    }
+    
+    .social-link:hover {
+        background: #0056b3;
+    }
+    </style>
+    {% endblock main %}

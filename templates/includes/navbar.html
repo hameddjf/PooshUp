@@ -1,3 +1,59 @@
+{% load custom_tags %}
+
+<style>
+  .dropdown-menu .dropdown-item {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    direction: rtr; 
+    text-align: center;
+    display: block;
+    width: 100%;
+  }
+  
+  .dropdown-submenu .dropdown-menu {
+    direction: rtr; /* برای اطمینان از راست به چپ نگه داشتن زیر منو */
+    top: 0;
+    left: 100%;
+    margin-top: -1rem;
+    margin-left: 0.5rem;
+    display: none;
+    background-color: #f8f9fa;
+    padding: 0.5rem 0;
+    border-radius: 0.25rem;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    max-height: 300px;
+    overflow: auto;
+  }
+  .dropdown-item {
+    padding: 0.5rem 1rem;
+    color: #495057;
+    transition: background-color 0.15s ease-in-out;
+  }
+  
+  .dropdown-item:hover {
+    background-color: #e9ecef;
+    color: #16181b;
+  }
+  
+  .dropdown-submenu .dropdown-item.dropdown-toggle::after {
+    float: right;
+    margin-top: 0.5rem;
+    border-top: 0.3em solid transparent;
+    border-right: 0;
+    border-bottom: 0.3em solid transparent;
+    border-left: 0.3em solid;
+  }
+
+  .dropdown-submenu:hover > .dropdown-menu {
+    display: block;
+  }
+
+  .dropdown:hover > .dropdown-menu {
+    display: block;
+  }
+
+</style>
 <!-- Topbar Start -->
 <div class="container-fluid">
   <div class="row bg-secondary py-1 px-xl-5">
@@ -25,14 +81,14 @@
 
           </div>
         </div>
-        <div class="btn-group mx-2">
+        {% comment %} <div class="btn-group mx-2">
           <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown">واحد پولی</button>
           <div class="dropdown-menu dropdown-menu-right">
             <button class="dropdown-item" type="button">USD</button>
             <button class="dropdown-item" type="button">EUR</button>
             <button class="dropdown-item" type="button">IRR</button>
           </div>
-        </div>
+        </div> {% endcomment %}
         <div class="btn-group">
           <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown">زبان</button>
           <div class="dropdown-menu dropdown-menu-right">
@@ -74,7 +130,7 @@
     </div>
     <div class="col-lg-4 col-6 text-right">
       <p class="m-0">خدمات مشتری</p>
-      <h5 class="m-0">+98 00000000000</h5>
+      <h5 class="m-0">+98 09931835803</h5>
     </div>
   </div>
 </div>
@@ -92,21 +148,29 @@
       <nav class="collapse position-absolute navbar navbar-vertical navbar-light align-items-start p-0 bg-light" id="navbar-vertical" style="width: calc(100% - 30px); z-index: 999;">
         <div class="navbar-nav w-100">
 
+          {% comment %} listing category {% endcomment %}
           <a href="{% url "store" %}" class="nav-item nav-link">تمام محصولات</a>
-          {% for category in links %}          
+          {% for category in links %}
             {% if category.parent is None %}
-              {% if category.children.all.exists %} <!-- دسته اصلی که دارای زیردسته است -->
-                <div class="nav-item dropdown dropright">
-                  <a href="{{category.get_absolute_url}}" class="nav-link dropdown-toggle" data-toggle="dropdown">{{category.title}} <i class="fa fa-angle-right float-right mt-1"></i></a>
+              <div class="nav-item dropdown dropright">
+                <a href="{{ category.get_absolute_url }}" class="nav-link dropdown-toggle" data-toggle="dropdown">{{ category.title }} <i class="fa fa-angle-right float-right mt-1"></i></a>
+                <div class="dropdown-menu position-absolute rounded-0 border-0 m-0" style="width: 220px; direction: rtl;">
                   {% for child_category in category.children.all %}
-                  <div class="dropdown-menu position-absolute rounded-0 border-0 m-0">
-                    <a href="{{child_category.get_absolute_url}}" class="dropdown-item">{{ child_category.title }}</a>
-                  </div>
+                    {% if child_category.children.all %}
+                      <div class="dropdown-submenu">
+                        <a href="{{ child_category.get_absolute_url }}" class="dropdown-item dropdown-toggle">{{ child_category.title }} <i class="fa fa-angle-right float-right"></i></a>
+                        <div class="dropdown-menu position-absolute rounded-0 border-0 m-0" style="width: 180px; left: 100%; top: 0;">
+                          {% for grandchild_category in child_category.children.all %}
+                            <a href="{{ grandchild_category.get_absolute_url }}" class="dropdown-item">{{ grandchild_category.title }}</a>
+                          {% endfor %}
+                        </div>
+                      </div>
+                    {% else %}
+                      <a href="{{ child_category.get_absolute_url }}" class="dropdown-item">{{ child_category.title }}</a>
+                    {% endif %}
                   {% endfor %}
                 </div>
-              {% else %}
-                <a href="{{category.get_absolute_url}}" class="nav-item nav-link">{{ category.title }}</a>
-              {% endif %}
+              </div>
             {% endif %}
           {% endfor %}
 
@@ -123,15 +187,21 @@
         <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
           <div class="navbar-nav mr-auto py-0">
             <a href="{% url "home" %}" class="nav-item nav-link active">خانه</a>
-            <!-- <a href="shop.html" class="nav-item nav-link">Shop</a> -->
-            <!-- <a href="detail.html" class="nav-item nav-link">Shop Detail</a> -->
             <div class="nav-item dropdown">
               <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">صفحات <i class="fa fa-angle-down mt-1"></i></a>
               <div class="dropdown-menu bg-primary rounded-0 border-0 m-0">
                 <a href="{% url "cart:cart_page" %}" class="dropdown-item">سبد خرید</a>
                 <a href="checkout.html" class="dropdown-item">بررسی</a>
+                <a href="#" class="dropdown-item">محصولات</a>
+                <a href="{% url "account:login_page" %}" class="dropdown-item">ورود</a>
+                <a href="{% url "account:register_page" %}" class="dropdown-item">ثبت نام</a>
               </div>
             </div>
+            <a href="{% url 'connect:contact' %}" class="nav-item nav-link">تماس با ما</a>
+            <a href="{% url 'connect:creators' %}" class="nav-item nav-link">سازنده</a>
+            {% comment %} <a href="#" class="nav-item nav-link">درباره ما</a> {% endcomment %}
+            {% comment %} <a href="#" class="nav-item nav-link">جستجو</a> {% endcomment %}
+            {% comment %} <a href="#" class="nav-item nav-link">وبلاگ</a> {% endcomment %}
           </div>
           <div class="navbar-nav ml-auto py-0 d-none d-lg-block">
             {% if user.is_authenticated %}

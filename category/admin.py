@@ -7,7 +7,7 @@ from .models import Category
 
 class CategoryAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('title',)}
-    list_display = ('title', 'slug', )
+    list_display = ('title', 'slug', 'parent')
 
 
 admin.site.register(Category, CategoryAdmin)

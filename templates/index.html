@@ -1,134 +1,447 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load custom_tags %}
 {% block main %}
-<style>
+    <!-- Swiper CSS -->
+    <link rel="stylesheet" href="{% static "css/slider/swiper-bundle.min.css" %}" />
 
-  .direction {
-    direction: rtl; 
-    text-align: right; 
-    background-color: #f8f9fa; 
-    border: 1px solid #ddd; 
-    padding: 10px; 
-    border-radius: 5px;
+    <!-- CSS -->
+    <link rel="stylesheet" href="{% static "css/slider/style.css" %}" />
+  <!-- Carousel Start -->
+   <style>
+    .image-container {
+      position: relative;
+      display: inline-block;
   }
-  .custom-label {
-      text-align: left; 
-      display: block;
-      margin-left: auto;
-      margin-right: auto; 
-      width: fit-content;
-    }
+  
+  .image {
+      width: 300px; /* اندازه تصویر */
+      height: auto;
+      transition: 0.3s; /* انیمیشن ملایم */
+  }
+  
+  .overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.5); /* پس‌زمینه نیمه شفاف */
+      opacity: 0; /* در حالت عادی invisibility */
+      transition: opacity 0.3s; /* انیمیشن ملایم */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+  }
+  
+  .overlay .icon {
+      color: white; /* رنگ آیکون‌ها */
+      font-size: 24px; /* اندازه آیکون‌ها */
+      margin: 0 10px; /* فاصله بین آیکون‌ها */
+  }
+  
+  .image-container:hover .overlay {
+      opacity: 1; /* نمایش overlay */
+  }
+  
+  .image-container:hover .image {
+      filter: brightness(70%); /* تغییر میزان روشنایی تصویر هنگام هاور */
+  }
 
-  .form-control {
-      width: 100%;}
-</style>
+
+
+
+  body {
+    display: block !important;
+    background-color: #F5F5F5;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+}
+
+.image-box {
+    position: relative;
+    overflow: hidden;
+    border-radius: 10px;
+    background-color: #FFFFFF;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.product-action {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+    background: rgba(0, 0, 0, 0.6);
+    border-radius: 10px;
+}
+
+.image-box:hover .product-action {
+    opacity: 1;
+}
+
+.product-item {
+    transition: .5s;
+} 
+
+.product-item:hover {
+    box-shadow: 0 0 30px #DDDDDD;
+}
+
+.product-item:hover .product-action a.btn {
+    opacity: 1;
+    margin-top: 0;
+}
+
+.product-item .product-img img {
+    transition: .5s;
+}
+
+.product-item:hover .product-img img {
+    transform: scale(1.2);
+}
+
+.product-item .btn {
+    opacity: 0;
+    margin-top: 20px;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.product-item:hover .product-action a.btn {
+    opacity: 1;
+}
+
+.product-item .btn:hover {
+    color: #FFD333 !important;
+}
+
+.filter-options {
+    display: flex;
+    {% comment %} justify-content: flex-start; {% endcomment %}
+    justify-content: center;
+    margin: 20px 0;
+    padding: 10px;
+    background-color: #FFFFFF;
+    border-radius: 35px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.filter-button {
+    background-color: transparent;
+    border: 2px solid transparent;
+    border-radius: 5px;
+    padding: 5px 10px;
+    margin-right: 10px;
+    text-decoration: none !important;
+    color: #333;
+    font-weight: bold;
+    transition: background-color 0.3s, border-color 0.3s, color 0.3s;
+}
+
+.filter-button.active, .filter-button.selected {
+    background-color: #3bb0d4;
+    border-color: #3bb0d4;
+    color: white;
+}
+
+.filter-button:hover {
+    background-color: #f0f0f0;
+    border-color: #3bb0d4;
+    color: #3bb0d4;
+}
+
+.swiper-slide {
+  height: auto;
+}
+.slide-container {
+  margin: 0 23%;
+  margin-right: auto;
+  overflow: visible;
+}
+
+
+.fa-2x {
+    font-size: 2em;
+    padding-left: 10% !important;
+}
+
+.overflow-hidden {
+    width : 50% !important;
+    overflow: hidden !important;
+}
+
+.overflow-hidden img {
+    height: 120%;
+    width: auto; 
+    transform: translateX(-10px);
+    margin-left: 10px; 
+}
+
+.pl-3, .px-3 {
+    text-align: center;
+}
+   </style>
   <!-- Carousel Start -->
   <div class="container-fluid mb-3">
     <div class="row px-xl-5">
-      <div class="col-lg-8">
-        <div id="header-carousel" class="carousel slide carousel-fade mb-30 mb-lg-0" data-ride="carousel">
-          <ol class="carousel-indicators">
-            <li data-target="#header-carousel" data-slide-to="0" class="active"></li>
-            <li data-target="#header-carousel" data-slide-to="1"></li>
-            <li data-target="#header-carousel" data-slide-to="2"></li>
-          </ol>
-          <div class="carousel-inner">
-            <div class="carousel-item position-relative active" style="height: 430px;">
-              <img class="position-absolute w-100 h-100" src="{% static "img/carousel-1.jpg" %}" style="object-fit: cover;" />
-              <div class="carousel-caption d-flex flex-column align-items-center justify-content-center">
-                <div class="p-3" style="max-width: 700px;">
-                  <h1 class="display-4 text-white mb-3 animate__animated animate__fadeInDown">Men Fashion</h1>
-                  <p class="mx-md-5 px-5 animate__animated animate__bounceIn">Lorem rebum magna amet lorem magna erat diam stet. Sadips duo stet amet amet ndiam elitr ipsum diam</p>
-                  <a class="btn btn-outline-light py-2 px-4 mt-3 animate__animated animate__fadeInUp" href="#">Shop Now</a>
+        <div class="col-lg-8">
+            <div id="header-carousel" class="carousel slide carousel-fade mb-30 mb-lg-0" data-ride="carousel">
+                <ol class="carousel-indicators">
+                    <li data-target="#header-carousel" data-slide-to="0" class="active"></li>
+                    <li data-target="#header-carousel" data-slide-to="1"></li>
+                    <li data-target="#header-carousel" data-slide-to="2"></li>
+                </ol>
+                <div class="carousel-inner">
+                    <div class="carousel-item position-relative active" style="height: 430px;">
+                        <img class="position-absolute w-100 h-100" src="{% static "img/carousel-1.jpg" %}" style="object-fit: cover;">
+                        <div class="carousel-caption d-flex flex-column align-items-center justify-content-center">
+                            <div class="p-3" style="max-width: 700px;">
+                                <h1 class="display-4 text-white mb-3 animate__animated animate__fadeInDown">مد مردانه</h1>
+                                {% comment %} <p class="mx-md-5 px-5 animate__animated animate__bounceIn">Lorem rebum magna amet lorem magna erat diam stet. Sadips duo stet amet amet ndiam elitr ipsum diam</p> {% endcomment %}
+                                <a class="btn btn-outline-light py-2 px-4 mt-3 animate__animated animate__fadeInUp" href="#">خرید</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="carousel-item position-relative" style="height: 430px;">
+                        <img class="position-absolute w-100 h-100" src="{% static "img/carousel-2.jpg" %}" style="object-fit: cover;">
+                        <div class="carousel-caption d-flex flex-column align-items-center justify-content-center">
+                            <div class="p-3" style="max-width: 700px;">
+                                <h1 class="display-4 text-white mb-3 animate__animated animate__fadeInDown">مد زنانه</h1>
+                                {% comment %} <p class="mx-md-5 px-5 animate__animated animate__bounceIn">Lorem rebum magna amet lorem magna erat diam stet. Sadips duo stet amet amet ndiam elitr ipsum diam</p> {% endcomment %}
+                                <a class="btn btn-outline-light py-2 px-4 mt-3 animate__animated animate__fadeInUp" href="#">خرید</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="carousel-item position-relative" style="height: 430px;">
+                        <img class="position-absolute w-100 h-100" src="{% static "img/carousel-3.jpg" %}" style="object-fit: cover;">
+                        <div class="carousel-caption d-flex flex-column align-items-center justify-content-center">
+                            <div class="p-3" style="max-width: 700px;">
+                                <h1 class="display-4 text-white mb-3 animate__animated animate__fadeInDown">مد بچگانه</h1>
+                                {% comment %} <p class="mx-md-5 px-5 animate__animated animate__bounceIn">Lorem rebum magna amet lorem magna erat diam stet. Sadips duo stet amet amet ndiam elitr ipsum diam</p> {% endcomment %}
+                                <a class="btn btn-outline-light py-2 px-4 mt-3 animate__animated animate__fadeInUp" href="#">خرید</a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-              </div>
             </div>
-            <div class="carousel-item position-relative" style="height: 430px;">
-              <img class="position-absolute w-100 h-100" src="img/carousel-2.jpg" style="object-fit: cover;" />
-              <div class="carousel-caption d-flex flex-column align-items-center justify-content-center">
-                <div class="p-3" style="max-width: 700px;">
-                  <h1 class="display-4 text-white mb-3 animate__animated animate__fadeInDown">Women Fashion</h1>
-                  <p class="mx-md-5 px-5 animate__animated animate__bounceIn">Lorem rebum magna amet lorem magna erat diam stet. Sadips duo stet amet amet ndiam elitr ipsum diam</p>
-                  <a class="btn btn-outline-light py-2 px-4 mt-3 animate__animated animate__fadeInUp" href="#">Shop Now</a>
+        </div>
+        <div class="col-lg-4">
+            <div class="product-offer mb-30" style="height: 200px;">
+                <img class="img-fluid" src="{% static "img/offer-1.jpg" %}" alt="">
+                <div class="offer-text">
+                    <h6 class="text-white text-uppercase">Save 20%</h6>
+                    <h3 class="text-white mb-3">Special Offer</h3>
+                    <a href="" class="btn btn-primary">Shop Now</a>
                 </div>
-              </div>
             </div>
-            <div class="carousel-item position-relative" style="height: 430px;">
-              <img class="position-absolute w-100 h-100" src="img/carousel-3.jpg" style="object-fit: cover;" />
-              <div class="carousel-caption d-flex flex-column align-items-center justify-content-center">
-                <div class="p-3" style="max-width: 700px;">
-                  <h1 class="display-4 text-white mb-3 animate__animated animate__fadeInDown">Kids Fashion</h1>
-                  <p class="mx-md-5 px-5 animate__animated animate__bounceIn">Lorem rebum magna amet lorem magna erat diam stet. Sadips duo stet amet amet ndiam elitr ipsum diam</p>
-                  <a class="btn btn-outline-light py-2 px-4 mt-3 animate__animated animate__fadeInUp" href="#">Shop Now</a>
+            <div class="product-offer mb-30" style="height: 200px;">
+                <img class="img-fluid" src="{% static "img/offer-2.jpg" %}" alt="">
+                <div class="offer-text">
+                    <h6 class="text-white text-uppercase">Save 20%</h6>
+                    <h3 class="text-white mb-3">Special Offer</h3>
+                    <a href="" class="btn btn-primary">Shop Now</a>
                 </div>
-              </div>
             </div>
-          </div>
+        </div>
+    </div>
+</div>
+  <!-- Carousel End -->  
+  
+</div>
+
+<!-- Featured Start -->
+<div class="container-fluid pt-5" style='direction: rtl;'>
+    <div class="row px-xl-5 pb-3">
+      <div class="col-lg-3 col-md-6 col-sm-12 pb-1">
+        <div class="d-flex align-items-center bg-light mb-4" style="padding: 30px;">
+          <i class="fa fa-check text-primary fa-2x mr-3"></i>
+          <h5 class="font-weight-semi-bold m-0">محصول با کیفیت</h5>
+        </div>
+      </div>
+      <div class="col-lg-3 col-md-6 col-sm-12 pb-1">
+        <div class="d-flex align-items-center bg-light mb-4" style="padding: 30px;">
+          <i class="fas fa-truck text-primary fa-2x mr-2"></i>
+          <h5 class="font-weight-semi-bold m-0">ارسال رایگان</h5>
+        </div>
+      </div>
+      <div class="col-lg-3 col-md-6 col-sm-12 pb-1">
+        <div class="d-flex align-items-center bg-light mb-4" style="padding: 30px;">
+          <i class="fas fa-exchange-alt text-primary fa-2x mr-3"></i>
+          <h5 class="font-weight-semi-bold m-0">برگشت 14-روزه</h5>
+        </div>
+      </div>
+      <div class="col-lg-3 col-md-6 col-sm-12 pb-1">
+        <div class="d-flex align-items-center bg-light mb-4" style="padding: 30px;">
+          <i class="fa fa-phone-volume text-primary fa-2x mr-3"></i>
+          <h5 class="font-weight-semi-bold m-0"> پشتیبانی 24/7</h5>
+        </div>
+      </div>
+      <div class="col-lg-3 col-md-6 col-sm-12 pb-1">
+        <div class="d-flex align-items-center bg-light mb-4" style="padding: 30px;">
+          <i class="fas fa-award text-primary fa-2x mr-3"></i>
+          <h5 class="font-weight-semi-bold m-0">برند مورد اعتماد</h5>
+        </div>
+      </div>
+      <div class="col-lg-3 col-md-6 col-sm-12 pb-1">
+        <div class="d-flex align-items-center bg-light mb-4" style="padding: 30px;">
+          <i class="fas fa-user-shield text-primary fa-2x mr-3"></i>
+          <h5 class="font-weight-semi-bold m-0">پرداخت امن</h5>
+        </div>
+      </div>
+      <div class="col-lg-3 col-md-6 col-sm-12 pb-1">
+        <div class="d-flex align-items-center bg-light mb-4" style="padding: 30px;">
+          <i class="fas fa-clock text-primary fa-2x mr-3"></i>
+          <h5 class="font-weight-semi-bold m-0">تحویل سریع</h5>
+        </div>
+      </div>
+      <div class="col-lg-3 col-md-6 col-sm-12 pb-1">
+        <div class="d-flex align-items-center bg-light mb-4" style="padding: 30px;">
+          <i class="fas fa-thumbs-up text-primary fa-2x mr-3"></i>
+          <h5 class="font-weight-semi-bold m-0">رضایت مشتری</h5>
         </div>
       </div>
     </div>
   </div>
-  <!-- Carousel End -->
+<!-- Featured End -->
 
+<!-- Categories Start -->
+<div class="container-fluid pt-5">
+    <h2 class="section-title position-relative text-uppercase mx-xl-5 mb-4"><span class="bg-secondary pr-3">دسته بندی ها</span></h2>
+    <div class="row px-xl-5 pb-3">
+        <div class="row">
+            {% for category in available_categories %}
+                <div class="col-lg-3 col-md-4 col-sm-6 pb-1">
+                    <a class="text-decoration-none" href="{{ category.get_absolute_url }}">
+                        <div class="cat-item d-flex align-items-center mb-4">
+                            <div class="overflow-hidden" style="width: 100px; height: 100px;">
+                                <img class="img-fluid" src="{{ category.category_image.url }}" alt="">
+                            </div>
+                            <div class="flex-fill pl-3">
+                                <h6>{{ category.title }}</h6>
+                                <small class="text-body">موجودی {{ category.product_count }} محصول</small>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+<!-- Categories End -->
+  
   <!-- Products Start -->
-  <div class="container-fluid pt-5 pb-3">
+<div class="container-fluid pt-5 pb-3">
+  {% for category in categories %}
     <div class="section-header">
-      <h2 class="section-title">جدیدترین محصولات</h2>
-      <div class="divider"></div>
-      <a href='{% url "store" %}'>
-      <span class="btn-view-all">مشاهده همه</span>
-    </a>
+        <h2 class="section-title">{{ category.title }}</h2>
+        <div class="divider"></div>
+        <a href="{% url 'store' %}">
+            <span class="btn-view-all">مشاهده همه</span>
+        </a>
     </div>
-    <div class="row px-xl-5">
-      {% for product in products %}
-        {% if forloop.counter <= 8 %}
-          <div class="col-lg-3 col-md-4 col-sm-6 pb-1">
-            <div class="product-item bg-light mb-4">
-                <div class="product-img position-relative overflow-hidden">
-                  <a href={{product.get_url}}>
-                    <img class="img-fluid w-100" src="{{product.image.url}}" alt="" />
-                  </a>
-                  <div class="product-action">
-                    
-                    {% if product.stock >= 1 %}
-                      <a class="btn btn-outline-dark btn-square" href="{% url "cart:add_to_cart_page" product.id %}"><i class="fa fa-shopping-cart"></i></a>
-                    {% else %}
-                      <a class="btn btn-outline-dark btn-square"><i class="fa fa-shopping-cart"></i></a>
+    <div class="container swiper">
+      <div class="filter-options">
+        <a href="?category_id={{ category.id }}&sort=latest" class="filter-button">جدیدترین</a>
+        <a href="?category_id={{ category.id }}&min_price={{ min_price }}&max_price={{ max_price }}&sort=min_price" class="filter-button">کمترین قیمت</a>
+        <a href="?category_id={{ category.id }}&min_price={{ min_price }}&max_price={{ max_price }}&sort=max_price" class="filter-button">بیشترین قیمت</a>
+        <a href="?category_id={{ category.id }}&sort=most_discount" class="filter-button">بیشترین تخفیف</a>
+        <a href="?category_id={{ category.id }}&in_stock=true" class="filter-button">فقط محصولات موجود</a>
+      </div>
+        <div class="slide-container">
+            <div class="card-wrapper swiper-wrapper">
+              
+                {% for product in products %}
+                  {% for product_category in product|get_related_categories:related_categories %}
+                  {% if product_category == category %}
+                  
+                        <div class="card swiper-slide">
+                            <div class="image-box product-item">
+                                <a href="{{ product.get_url }}">
+                                    <img class="img-fluid w-100" src="{{ product.image.url }}" alt="{{ product.title }}" />
+                                </a>
+                                <div class="product-action">
+                                    {% if product.stock >= 1 %}
+                                        <a class="btn btn-outline-dark btn-square" href="{% url 'cart:add_to_cart_page' product.id %}"><i class="fa fa-shopping-cart"></i></a>
+                                    {% else %}
+                                        <a class="btn btn-outline-dark btn-square" disabled><i class="fa fa-shopping-cart"></i></a>
+                                    {% endif %}
+                                    <a class="btn btn-outline-dark btn-square" href="#"><i class="far fa-heart"></i></a>
+                                    <a class="btn btn-outline-dark btn-square" href="#"><i class="fas fa-sync-alt"></i></a>
+                                    <a class="btn btn-outline-dark btn-square" href="{{ product.get_url }}"><i class="fa fa-search"></i></a>
+                                </div>
+                            </div>
+                            <div class="text-center py-4">
+                                <a class="h6 text-decoration-none text-truncate" href="{{ product.get_url }}">{{ product.title }}</a>
+                                <p class="item-price">
+                                    {% if product.discount == 0 %}
+                                        <h4>${{ product.price }}</h4>
+                                    {% else %}
+                                        <h5>${{ product.discount_price }}</h5>
+                                        <h4><del>${{ product.price }}</del></h4>
+                                    {% endif %}
+                                </p>
+                                <div class="star-rating">
+                                    <span>
+                                        {% for i in "12345"|make_list %}
+                                            <i class="fa fa-star{% if product.averageReview < i|add:0.5 %}-o{% elif product.averageReview >= i|add:0.5 and product.averageReview < i %}-half-o{% endif %}" aria-hidden="true"></i>
+                                        {% endfor %}
+                                    </span>
+                                </div>
+                                <small>موجودی : ({{ product.stock }}) عدد</small>
+                            </div>
+                        </div>
                     {% endif %}
-
-                    <a class="btn btn-outline-dark btn-square" href=""><i class="far fa-heart"></i></a>
-                    <a class="btn btn-outline-dark btn-square" href=""><i class="fa fa-sync-alt"></i></a>
-                    <a class="btn btn-outline-dark btn-square" href="{{ product.get_url }}"><i class="fa fa-search"></i></a>
-                  </div>
-                </div>
-              <div class="text-center py-4">
-                <a class="h6 text-decoration-none text-truncate" href="{{ product.get_url }}">{{product.title}}</a>
-                <div class="d-flex align-items-center justify-content-center mt-2">
-                  {% if product.discount == 0 %}
-                  <h5>${{product.price}}</h5>
-                  {% endif %}
-                  {% if product.discount > 0 %}
-                  <h5>${{product.discount_price}}</h5>
-                  {% comment %} <h5>%{{product.discount}}</h5>   نمایش درصد تخفیف    {% endcomment %}
-                  <h6 class="text-muted ml-2"><del>${{product.price}}</del></h6>
-                  {% endif %}
-                </div>
-                <div class="rating-star " style='direction: ltr; text-align:center'>
-                  <span>
-                    <i class="fa fa-star{% if product.averageReview < 0.5 %}-o{% elif product.averageReview >= 0.5 and product.averageReview < 1 %}-half-o {% endif %}" aria-hidden="true"></i>
-                    <i class="fa fa-star{% if product.averageReview < 1.5 %}-o{% elif product.averageReview >= 1.5 and product.averageReview < 2 %}-half-o {% endif %}" aria-hidden="true"></i>
-                    <i class="fa fa-star{% if product.averageReview < 2.5 %}-o{% elif product.averageReview >= 2.5 and product.averageReview < 3 %}-half-o {% endif %}" aria-hidden="true"></i>
-                    <i class="fa fa-star{% if product.averageReview < 3.5 %}-o{% elif product.averageReview >= 3.5 and product.averageReview < 4 %}-half-o {% endif %}" aria-hidden="true"></i>
-                    <i class="fa fa-star{% if product.averageReview < 4.5 %}-o{% elif product.averageReview >= 4.5 and product.averageReview < 5 %}-half-o {% endif %}" aria-hidden="true"></i>
-                    </span>
-                </div>
-                <small>موجودی : ({{product.stock}}) عدد</small>
-              </div>
+                {% endfor %}
+                {% endfor %}
             </div>
-          </div>
-        {% endif %}
-      {% endfor product %}
+        </div>
+        <div class="swiper-button-next swiper-navBtn"></div>
+        <div class="swiper-button-prev swiper-navBtn"></div>
+        <div class="swiper-pagination"></div>
     </div>
+{% endfor %}
+  
+  <script src="{% static 'js/slider/swiper-bundle.min.js' %}"></script>
+  <script src="{% static 'js/slider/script.js' %}"></script>
+  <script>
+    function setSelectedFilter() {
+        const filterButtons = document.querySelectorAll('.filter-button');
+        const urlParams = new URLSearchParams(window.location.search);
+        const currentCategoryId = urlParams.get('category_id');
+        const sortOption = urlParams.get('sort');
+        const inStockOption = urlParams.get('in_stock');
+    
+        filterButtons.forEach(button => {
+            // بررسی می‌کند که آیا این دکمه مربوط به دسته‌بندی فعلی است
+            if (button.href.includes(`category_id=${currentCategoryId}`)) {
+                // انتخاب مرتب‌سازی موجود را بررسی کنید
+                if (button.href.includes(`sort=${sortOption}`) || 
+                    (inStockOption === 'true' && button.href.includes('in_stock=true'))) {
+                    button.classList.add('selected');
+                } else {
+                    button.classList.remove('selected');
+                }
+            } else {
+                // اگر این دکمه مربوط به دسته فعلی نیست، آن را نادیده بگیرید
+                button.classList.remove('selected');
+            }
+        });
+    
+        // اگر هیچ گزینه sort انتخاب نشده باشد، دکمه جدیدترین را انتخاب کنید
+        if (!sortOption && !inStockOption) {
+            const defaultButton = filterButtons[0]; // دکمه "جدیدترین" در ابتدا
+            defaultButton.classList.add('selected');
+        }
+    }
+    
+    document.addEventListener('DOMContentLoaded', setSelectedFilter);
+  </script>
   </div>
   <!-- Products End -->
 {% endblock %}

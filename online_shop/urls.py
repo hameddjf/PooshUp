@@ -19,18 +19,19 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
-from category.views import home
+from category.views import BaseView
 
 # app_name = 'online_shop'
 urlpatterns = [
     path('admin/', include('admin_honeypot.urls', namespace='admin_honeypot')),
     path('securelogin/', admin.site.urls),
 
-    path('', home, name='home'),
+    path('', BaseView.as_view(), name='home'),
     path('store/', include('store.urls')),
     path('cart/', include('carts.urls')),
     path('account/', include('accounts.urls')),
     path('orders/', include('orders.urls')),
+    path('connect/', include('connect.urls', namespace='connect')),
 
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

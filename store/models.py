@@ -12,7 +12,7 @@ class Product(models.Model):
     title = models.CharField(max_length=50, unique=True)
     slug = models.SlugField(max_length=50, unique=True)
     concise = models.TextField(max_length=500, blank=True)
-    description = models.TextField(max_length=500, blank=True)
+    description = models.TextField(blank=True,)
     information = models.TextField(max_length=500, blank=True)
     color = models.CharField(max_length=55, default='سفید')
     size = models.CharField(max_length=55, default='بزرگ')
