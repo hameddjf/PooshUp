@@ -1,11 +1,14 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.utils.translation import gettext as _
-
+from django.dispatch import receiver
+from django.db.models.signals import post_save
 
 # Create your models here.
 
 # create and manage of accounts
+
+
 class MyAccountManager(BaseUserManager):
     # create the normal user
     def create_user(self, first_name, last_name, username,
@@ -109,6 +112,12 @@ class Account(AbstractBaseUser):
     # check the permissions for specific moduls         : its low level
     def has_module_perms(self, add_label):
         return True
+
+
+@receiver(post_save, sender=Account)
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        UserProfile.objects.create(user=instance)
 
 
 class UserProfile(models.Model):

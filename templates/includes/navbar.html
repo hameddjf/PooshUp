@@ -190,9 +190,10 @@
             <div class="nav-item dropdown">
               <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">صفحات <i class="fa fa-angle-down mt-1"></i></a>
               <div class="dropdown-menu bg-primary rounded-0 border-0 m-0">
+                <a href="{% url "account:profile_page" %}" class="dropdown-item">پروفایل</a>
                 <a href="{% url "cart:cart_page" %}" class="dropdown-item">سبد خرید</a>
-                <a href="checkout.html" class="dropdown-item">بررسی</a>
-                <a href="#" class="dropdown-item">محصولات</a>
+                <a href="{% url "cart:checkout_page" %}" class="dropdown-item">بررسی</a>
+                <a href="{% url 'store'  %}" class="dropdown-item">محصولات</a>
                 <a href="{% url "account:login_page" %}" class="dropdown-item">ورود</a>
                 <a href="{% url "account:register_page" %}" class="dropdown-item">ثبت نام</a>
               </div>

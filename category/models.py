@@ -1,10 +1,10 @@
 from django.db import models
 from django.urls import reverse
 
-# Create your models here.
-
 
 class Category(models.Model):
+    product = models.ManyToManyField(
+        "store.Product", related_name='product_category')
     parent = models.ForeignKey('self', default=None, null=True, blank=True,
                                on_delete=models.SET_NULL,
                                related_name='children',
@@ -19,8 +19,19 @@ class Category(models.Model):
         verbose_name = 'دسته بندی'
         verbose_name_plural = 'دسته بندی ها'
 
+    class Meta:
+        verbose_name = 'دسته بندی'
+        verbose_name_plural = 'دسته بندی ها'
+
     def get_absolute_url(self):
-        return reverse("products_by_category", args=[self.slug])
+        return reverse('products_by_category', args=[self.slug])
+
+    def get_all_subcategories(self):
+        all_subcategories = [self]
+        if self.children.exists():
+            for child in self.children.all():
+                all_subcategories.extend(child.get_all_subcategories())
+        return all_subcategories
 
     def __str__(self):
         return self.title

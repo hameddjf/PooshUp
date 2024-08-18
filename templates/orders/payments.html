@@ -160,11 +160,11 @@
       }
     
       var amount = parseFloat("{{ grand_total }}");
-      var url = "{% url 'payments' %}";
+      var url = "{% url 'order:payments_page' %}";
       var csrfToken = getCookie('csrftoken');
       var orderID = "{{ order.order_number }}";
       var paymentMethod = 'PayPal';
-      var redirectUrl = "{% url 'order_complete' %}"
+      var redirectUrl = "{% url 'order:order_complete_page' %}"
     
       paypal.Buttons({
         // Style for button

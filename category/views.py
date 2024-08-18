@@ -14,8 +14,15 @@ class BaseView(ListView):
     context_object_name = 'products'
     paginate_by = 10
 
+    def get_paginate_by(self, queryset):
+        paginate_by = self.request.GET.get('paginate_by', self.paginate_by)
+        if paginate_by in [12, 24, 36]:
+            return int(paginate_by)
+        return self.paginate_by
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['sort'] = self.request.GET.get('sort')
 
         # دسته‌بندی‌های دارای حداقل یک محصول موجود
         available_categories = Category.objects.filter(
@@ -94,6 +101,9 @@ class BaseView(ListView):
         # دسته‌بندی‌های زیر دسته
         context['subcategories'] = Category.objects.filter(
             parent__isnull=False)
+
+        # صفحه بندی
+        context['paginate_by'] = self.get_paginate_by(self.object_list)
 
         # شمارش تعداد محصولات هر دسته‌بندی
         for category in context['subcategories']:

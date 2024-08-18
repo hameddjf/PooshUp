@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{% load custom_tags %}
 
 {% block main %}
 <style>
@@ -15,6 +15,10 @@
 		display: contents;}
     a {
         color: #245aea;}
+	.default-profile-icon {
+			font-size: 80px;
+			color: #ccc;
+		  }
 </style>
 <section class="section-conten padding-y bg direction">
 
@@ -30,7 +34,13 @@
 		</header>
 		<div class="card-body">
 			<div class="text-right">
-				<img src="{{userprofile.profile_picture.url}}" alt="Profile Picture" width="100" style="border-radius:50px;">
+				{% if user.email %}
+					<img src="{{ user|get_profile_image }}" alt="Profile Picture" class="profile-image">
+			  	{% elif userprofile.profile_picture %}
+					<img src="{{ userprofile.profile_picture.url }}" alt="Profile Picture" class="profile-image">
+				{% else %}
+  					<i class="fas fa-user-circle default-profile-icon"></i>
+			  	{% endif %}
 			</div>
 			<div class="row">
 			<div class="col-md-12">

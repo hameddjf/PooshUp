@@ -17,15 +17,16 @@ class ProductGalleryInline(admin.TabularInline):
 class ProductAdmin(admin.ModelAdmin):
     list_display = ('title', 'slug', 'price', 'stock',
                     'category', 'created_date', 'is_available')
+    raw_id_fields = ('category',)
     prepopulated_fields = {'slug': ('title',)}
     inlines = [ProductGalleryInline]
 
 
 class VariationAdmin(admin.ModelAdmin):
-    list_display = ('product', 'variation_category',
+    list_display = ('variation_category',
                     'variation_value', 'is_active')
     list_editable = ('is_active',)
-    list_filter = ('product', 'variation_category',
+    list_filter = ('variation_category',
                    'variation_value')
 
 

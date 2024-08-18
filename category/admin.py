@@ -7,6 +7,7 @@ from .models import Category
 
 class CategoryAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('title',)}
+    filter_horizontal = ('product',)
     list_display = ('title', 'slug', 'parent')
 
 
