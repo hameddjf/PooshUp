@@ -223,19 +223,9 @@
         <div class="col-lg-4">
             <div class="product-offer mb-30" style="height: 200px;">
                 <img class="img-fluid" src="{% static "img/offer-1.jpg" %}" alt="">
-                {% comment %} <div class="offer-text">
-                    <h6 class="text-white text-uppercase">Save 20%</h6>
-                    <h3 class="text-white mb-3">Special Offer</h3>
-                    <a href="" class="btn btn-primary">Shop Now</a>
-                </div> {% endcomment %}
             </div>
             <div class="product-offer mb-30" style="height: 200px;">
                 <img class="img-fluid" src="{% static "img/offer-2.jpg" %}" alt="">
-                {% comment %} <div class="offer-text">
-                    <h6 class="text-white text-uppercase">Save 20%</h6>
-                    <h3 class="text-white mb-3">Special Offer</h3>
-                    <a href="" class="btn btn-primary">Shop Now</a>
-                </div> {% endcomment %}
             </div>
         </div>
     </div>
@@ -324,32 +314,32 @@
 </div>
 <!-- Categories End -->
 
-{% comment %} <!-- Offer Start -->
+<!-- Offer Start -->
 <div class="container-fluid pt-5 pb-3">
     <div class="row px-xl-5">
         <div class="col-md-6">
             <div class="product-offer mb-30" style="height: 300px;">
                 <img class="img-fluid" src="{% static "img/offer-1.jpg" %}" alt="">
-                <div class="offer-text">
+                {% comment %} <div class="offer-text">
                     <h6 class="text-white text-uppercase">Save 20%</h6>
                     <h3 class="text-white mb-3">Special Offer</h3>
                     <a href="" class="btn btn-primary">Shop Now</a>
-                </div>
+                </div> {% endcomment %}
             </div>
         </div>
         <div class="col-md-6">
             <div class="product-offer mb-30" style="height: 300px;">
                 <img class="img-fluid" src="{% static "img/offer-2.jpg" %}" alt="">
-                <div class="offer-text">
+                {% comment %} <div class="offer-text">
                     <h6 class="text-white text-uppercase">Save 20%</h6>
                     <h3 class="text-white mb-3">Special Offer</h3>
                     <a href="" class="btn btn-primary">Shop Now</a>
-                </div>
+                </div> {% endcomment %}
             </div>
         </div>
     </div>
 </div>
-<!-- Offer End --> {% endcomment %}
+<!-- Offer End --> 
   
   <!-- Products Start -->
 <div class="container-fluid pt-5 pb-3">
@@ -395,13 +385,20 @@
                             <div class="text-center py-4">
                                 <a class="h6 text-decoration-none text-truncate" href="{{ product.get_url }}">{{ product.title }}</a>
                                 <p class="item-price">
+
+                                    {% if product.stock > 0 %}
                                     {% if product.discount == 0 %}
-                                        <h4>${{ product.price }}</h4>
+                                        <h4>{{ product.price|format_price }}</h4>
                                     {% else %}
-                                        <h5>${{ product.discount_price }}</h5>
-                                        <h4><del>${{ product.price }}</del></h4>
+                                        <h5>{{ product.discount_price|format_price }}</h5>
+                                        <h4><del>{{ product.price|format_price }}</del></h4>
                                     {% endif %}
-                                </p>
+                                {% else %}
+                                    <h5 class="out-of-stock">
+                                        😔 اتمام موجودی ❌
+                                    </h5>
+                                {% endif %}
+                                
                                 <div class="star-rating">
                                     <span>
                                         {% for i in "12345"|make_list %}
@@ -409,7 +406,10 @@
                                         {% endfor %}
                                     </span>
                                 </div>
-                                <small>موجودی : ({{ product.stock }}) عدد</small>
+                                
+                                {% if product.stock > 0 %}
+                                    <small>موجودی : ({{ product.stock }}) عدد</small>
+                                {% endif %}
                             </div>
                         </div>
                     {% endif %}

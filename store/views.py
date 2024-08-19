@@ -1,8 +1,11 @@
+from .models import Product
+from django.views.generic import DetailView, ListView
 from django.shortcuts import render, get_object_or_404, redirect
 from django.core.paginator import Paginator
 from django.db.models import Q, Min, Max, IntegerField
 from django.db.models.functions import Cast
 from django.contrib import messages
+
 from .models import Product, ReviewRating, ProductGallery, Variation
 from .forms import ReviewForm
 
@@ -12,8 +15,7 @@ from orders.models import OrderProduct
 from carts.views import _cart_id
 # Create your views here.
 
-from django.views.generic import ListView
-from django.db.models import Min, Max
+
 from .models import Product, Category, Variation
 
 
@@ -67,7 +69,7 @@ class StoreView(ListView):
         self.max_price = max_price
 
         price_ranges = []
-        price_step = 45000
+        price_step = 100000
         current_min = min_price
         current_max = min_price + price_step
 
@@ -142,138 +144,51 @@ class StoreView(ListView):
         context['page_size'] = self.get_paginate_by(self.get_queryset())
         return context
 
-# def store(request, category_slug=None):
-#     categories = None
-#     products = None
 
-#     # Category filter
-#     if category_slug is not None:
-#         main_category = get_object_or_404(Category, slug=category_slug)
-#         related_categories = main_category.get_all_subcategories()
-#         all_category_ids = [cat.id for cat in related_categories]
-#         products = Product.objects.filter(
-#             category__id__in=all_category_ids, is_available=True).order_by('id')
-#     else:
-#         products = Product.objects.all().filter(
-#             is_available=True).order_by('id')
+class ProductDetailView(DetailView):
+    model = Product
+    template_name = 'store/product_detail.html'
+    context_object_name = 'single_product'
 
-#     # Implement price range filter
-#     products_with_prices = products.exclude(price__isnull=True)
-#     min_price = products_with_prices.aggregate(
-#         min_price=Min('price'))['min_price'] or 0
-#     max_price = products_with_prices.aggregate(
-#         max_price=Max('price'))['max_price'] or 0
+    def get_object(self, queryset=None):
+        category_slug = self.kwargs.get('category_slug')
+        product_slug = self.kwargs.get('product_slug')
+        return self.model.objects.get(category__slug=category_slug, slug=product_slug)
 
-#     price_ranges = []
-#     price_step = 30000
-#     current_min = min_price
-#     current_max = min_price + price_step
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        single_product = context['single_product']
+        request = self.request
 
-#     while current_max <= max_price:
-#         price_range = f'${current_min:.0f} - ${current_max:.0f}'
-#         products_in_range = products_with_prices.filter(
-#             price__gte=current_min, price__lt=current_max)
-#         product_count = products_in_range.count()
-#         price_ranges.append((price_range, product_count))
-#         current_min += price_step
-#         current_max += price_step
-
-#     selected_price_range = request.GET.getlist('price')
-
-#     if selected_price_range:
-#         for price_range in selected_price_range:
-#             min_price, max_price = map(float, price_range.split(' - '))
-#             products = products.filter(
-#                 price__gte=min_price, price__lt=max_price)
-#     else:
-#         products = products
-
-#     # Color filter
-#     selected_colors = request.GET.getlist('color')
-#     if selected_colors:
-#         color_variations = Variation.objects.filter(
-#             variation_category='color', variation_value__in=selected_colors, is_active=True)
-#         product_ids = [v.product.id for v in color_variations]
-#         products = products.filter(id__in=product_ids)
-
-#     # Size filter
-#     selected_sizes = request.GET.getlist('size')
-#     if selected_sizes:
-#         size_variations = Variation.objects.filter(
-#             variation_category='size', variation_value__in=selected_sizes, is_active=True)
-#         product_ids = [v.product.id for v in size_variations]
-#         products = products.filter(id__in=product_ids)
-
-#     # Paginator
-#     paginator = Paginator(products, 8)
-#     page = request.GET.get('page')
-#     paged_products = paginator.get_page(page)
-
-#     # Get all available colors and sizes
-#     all_colors = Variation.objects.filter(
-#         variation_category='color', is_active=True).values_list('variation_value', flat=True).distinct()
-#     all_sizes = Variation.objects.filter(
-#         variation_category='size', is_active=True).values_list('variation_value', flat=True).distinct()
-
-#     # Count products for each color and size
-#     color_product_counts = {color: products.filter(
-#         variation__variation_value=color, variation__variation_category='color').count() for color in all_colors}
-#     size_product_counts = {size: products.filter(
-#         variation__variation_value=size, variation__variation_category='size').count() for size in all_sizes}
-
-#     product_count = products.count()
-
-#     context = {
-#         'products': paged_products,
-#         'product_count': product_count,
-#         'categories': categories,
-#         'all_colors': all_colors,
-#         'all_sizes': all_sizes,
-#         'color_product_counts': color_product_counts,
-#         'size_product_counts': size_product_counts,
-#         'price_ranges': price_ranges,
-#         'selected_price_range': selected_price_range,
-#     }
-#     return render(request, 'store/store.html', context)
-
-
-def product_detail(request, category_slug, product_slug):
-    try:
-        single_product = Product.objects.get(
-            category__slug=category_slug, slug=product_slug)
         cart = Cart.objects.get(cart_id=_cart_id(request=request))
         in_cart = CartItem.objects.filter(
-            cart=cart,
-            product=single_product
-        ).exists()
-    except Exception:
-        cart = Cart.objects.create(
-            cart_id=_cart_id(request)
-        )
-    if request.user.is_authenticated:
-        try:
+            cart=cart, product=single_product).exists()
+
+        if request.user.is_authenticated:
             orderproduct = OrderProduct.objects.filter(
                 user=request.user, product_id=single_product.id).exists()
-        except Exception:
+        else:
             orderproduct = None
-    else:
-        orderproduct = None
 
-    reviews = ReviewRating.objects.filter(
-        product_id=single_product.id, status=True)
+        reviews = ReviewRating.objects.filter(
+            product_id=single_product.id, status=True)
+        product_gallery = ProductGallery.objects.filter(
+            Product_id=single_product.id)
 
-    # Get the product gallery
-    product_gallery = ProductGallery.objects.filter(
-        Product_id=single_product.id)
+        color_variations = single_product.variation.filter(
+            variation_category='color')
+        size_variations = single_product.variation.filter(
+            variation_category='size')
 
-    context = {
-        'single_product': single_product,
-        'in_cart': in_cart if 'in_cart' in locals() else False,
-        'orderproduct': orderproduct,
-        'reviews': reviews,
-        'product_gallery': product_gallery,
-    }
-    return render(request, 'store/product_detail.html', context=context)
+        context.update({
+            'in_cart': in_cart,
+            'orderproduct': orderproduct,
+            'reviews': reviews,
+            'product_gallery': product_gallery,
+            'color_variations': color_variations,
+            'size_variations': size_variations,
+        })
+        return context
 
 
 def search(request):

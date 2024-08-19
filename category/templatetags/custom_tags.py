@@ -45,3 +45,18 @@ def paginate_by_dropdown(current_paginate_by):
     """
     options = [10, 20, 30]
     return {'current_paginate_by': current_paginate_by, 'options': options}
+
+
+@register.filter
+def format_price(value):
+    if value is None:
+        return ''
+
+    value = str(int(value))
+    parts = []
+    while value:
+        parts.insert(0, value[-3:])
+        value = value[:-3]
+
+    formatted_value = ','.join(parts)
+    return f"{formatted_value} تومان"

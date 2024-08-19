@@ -24,13 +24,12 @@ class CartItem(models.Model):
     user = models.ForeignKey(
         "accounts.Account", verbose_name=_("کاربر"),
         on_delete=models.CASCADE, null=True)
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE, null=True)
-    quantity = models.IntegerField()
-    is_active = models.BooleanField(default=True)
-
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
     variations = models.ManyToManyField(
         Variation, verbose_name=_("واریانت ها"), blank=True)
+    quantity = models.IntegerField(default=1)
+    is_active = models.BooleanField(default=True)
 
     def sub_total(self):
         return self.product.price * self.quantity

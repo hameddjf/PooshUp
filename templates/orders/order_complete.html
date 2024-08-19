@@ -86,22 +86,22 @@
                                                         </p>
                                                     </td>
                                                     <td class="text-center">{{ item.quantity }}</td>
-                                                    <td class="text-center">{{ item.product_price }} تومان</td>
+                                                    <td class="text-center">{{ item.product_price|format_price }} </td>
                                                 </tr>
                                             {% endfor %}
                                         </tbody>
                                         <tfoot>
                                             <tr>
                                                 <th colspan="2" class="text-right">زیر مجموع :</th>
-                                                <th class="text-center">{{ subtotal }} تومان</th>
+                                                <th class="text-center">{{ subtotal|format_price }} </th>
                                             </tr>
                                             <tr>
                                                 <th colspan="2" class="text-right">مالیات :</th>
-                                                <th class="text-center">{{ order.tax }} تومان</th>
+                                                <th class="text-center">{{ order.tax|format_price }} </th>
                                             </tr>
                                             <tr>
                                                 <th colspan="2" class="text-right">مجموع کل :</th>
-                                                <th class="text-center">{{ order.order_total }} تومان</th>
+                                                <th class="text-center">{{ order.order_total|format_price }} </th>
                                             </tr>
                                         </tfoot>
                                     </table>

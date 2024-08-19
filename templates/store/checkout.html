@@ -1,6 +1,7 @@
 {% extends "base.html" %}
-<!DOCTYPE html>
 {% load static %}
+{% load custom_tags %}
+
 {% block main %}
 <style>
 
@@ -113,13 +114,13 @@
                                             </p>
                                         </figcaption>
                                     </td>
-                                    <td class="align-middle">${{cart_item.product.price}}</td>
+                                    <td class="align-middle">{{cart_item.product.price|format_price}}</td>
                                     <td class="align-middle">
                                         <div class="input-group quantity mx-auto" style="width: 100px;">
                                             <label class="custom-label">{{cart_item.quantity}}</label>
                                         </div>
                                     </td>
-                                    <td class="align-middle">${{cart_item.sub_total}}</td>
+                                    <td class="align-middle">{{cart_item.sub_total|format_price}}</td>
                                 </tr>
                             {% endfor %}
                         </tbody>

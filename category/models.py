@@ -4,7 +4,7 @@ from django.urls import reverse
 
 class Category(models.Model):
     product = models.ManyToManyField(
-        "store.Product", related_name='product_category')
+        "store.Product", related_name='product_category', null=True, blank=True,)
     parent = models.ForeignKey('self', default=None, null=True, blank=True,
                                on_delete=models.SET_NULL,
                                related_name='children',

@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 {% load static %}
+{% load custom_tags %}
+
 {% block main %}
 
 <style>
@@ -42,7 +44,7 @@
         <div class="col-lg-8 table-responsive mb-5">
             <div class="card">
                 <div class="card-header">
-                    آدرس صورتحساب
+                    مشخصات گیرنده
                 </div>
                 <div class="card-body">
                   <p class="card-text mb-0">نام و نام خوانوادگی: {{order.full_name}}</p>
@@ -96,13 +98,13 @@
                                             </p>
                                         </figcaption>
                                     </td>
-                                    <td class="align-middle">${{cart_item.product.price}}</td>
+                                    <td class="align-middle">{{cart_item.product.price|format_price}}</td>
                                     <td class="align-middle">
                                         <div class="input-group quantity mx-auto" style="width: 100px;">
                                             <label class="custom-label">{{cart_item.quantity}}</label>
                                         </div>
                                     </td>
-                                    <td class="align-middle">${{cart_item.sub_total}}</td>
+                                    <td class="align-middle">{{cart_item.sub_total|format_price}}</td>
                                 </tr>
                             {% endfor %}
                         </tbody>
@@ -123,17 +125,17 @@
             <div class="border-bottom pb-2">
               <div class="d-flex justify-content-between mb-3">
                 <h6>قیمت کل</h6>
-                <h6>${{total}}</h6>
+                <h6>{{total|format_price}}</h6>
               </div>
               <div class="d-flex justify-content-between">
                 <h6 class="font-weight-medium">مالیات</h6>
-                <h6 class="font-weight-medium">${{tax}}</h6>
+                <h6 class="font-weight-medium">{{tax|format_price}}</h6>
               </div>
             </div>
             <div class="pt-2">
               <div class="d-flex justify-content-between mt-2">
                 <h5>مجموع کل</h5>
-                <h5>${{grand_total}}</h5>
+                <h5>{{grand_total|format_price}}</h5>
               </div>
               <a href="{% url "cart:checkout_page" %}" class="btn btn-block btn-primary font-weight-bold my-3 py-3"> پرداخت</a>
             </div>
