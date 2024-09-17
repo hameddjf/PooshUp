@@ -1,79 +1,105 @@
 {% load static %}
 <!-- Footer Start -->
+ <Style>
+  .icon {
+    min-width: 50px;
+    border-radius: 20px;
+    height: 40px;
+  }
+  
+ </style>
 <footer>
-<div class="container-fluid bg-dark text-secondary mt-5 pt-5">
-  <div class="row px-xl-5 pt-5">
-    <div class="col-lg-4 col-md-12 mb-5 pr-3 pr-xl-5">
-      <h5 class="text-secondary text-uppercase mb-4">Get In Touch</h5>
-      <p class="mb-4">No dolore ipsum accusam no lorem. Invidunt sed clita kasd clita et et dolor sed dolor. Rebum tempor no vero est magna amet no</p>
-      <p class="mb-2">
-        <i class="fa fa-map-marker-alt text-primary mr-3"></i>123 Street, New York, USA
-      </p>
-      <p class="mb-2">
-        <i class="fa fa-envelope text-primary mr-3"></i>info@example.com
-      </p>
-      <p class="mb-0">
-        <i class="fa fa-phone-alt text-primary mr-3"></i>+012 345 67890
-      </p>
-    </div>
-    <div class="col-lg-8 col-md-12">
-      <div class="row">
-        <div class="col-md-4 mb-5">
-          <h5 class="text-secondary text-uppercase mb-4">Quick Shop</h5>
-          <div class="d-flex flex-column justify-content-start">
-            <a class="text-secondary mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Home</a>
-            <a class="text-secondary mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Our Shop</a>
-            <a class="text-secondary mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Shop Detail</a>
-            <a class="text-secondary mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Shopping Cart</a>
-            <a class="text-secondary mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Checkout</a>
-            <a class="text-secondary" href="#"><i class="fa fa-angle-right mr-2"></i>Contact Us</a>
-          </div>
-        </div>
-        <div class="col-md-4 mb-5">
-          <h5 class="text-secondary text-uppercase mb-4">My Account</h5>
-          <div class="d-flex flex-column justify-content-start">
-            <a class="text-secondary mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Home</a>
-            <a class="text-secondary mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Our Shop</a>
-            <a class="text-secondary mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Shop Detail</a>
-            <a class="text-secondary mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Shopping Cart</a>
-            <a class="text-secondary mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Checkout</a>
-            <a class="text-secondary" href="#"><i class="fa fa-angle-right mr-2"></i>Contact Us</a>
-          </div>
-        </div>
-        <div class="col-md-4 mb-5">
-          <h5 class="text-secondary text-uppercase mb-4">Newsletter</h5>
-          <p>Duo stet tempor ipsum sit amet magna ipsum tempor est</p>
-          <form action="">
-            <div class="input-group">
-              <input type="text" class="form-control" placeholder="Your Email Address" />
-              <div class="input-group-append">
-                <button class="btn btn-primary">Sign Up</button>
-              </div>
+  <div class="container-fluid bg-dark text-light mt-5 pt-5">
+    <div class="row px-xl-5 pt-5" style='direction: ltr !important;'>
+      <div class="col-lg-4 col-md-12 mb-5 pr-3 pr-xl-5" style='direction: rtl !important;'>
+        <h5 class="text-light text-uppercase mb-4">ارتباط با ما</h5>
+        <p class="mb-4">در صورت هرگونه سوال و پیشنهاد، با ما در ارتباط باشید.</p>
+        <div  style='direction: ltr !important;'>
+            <div class="mb-2" dir="ltr" style="display: flex; align-items: center;">
+              <i class="fas fa-map-marker-alt text-primary mr-3"></i>
+              <div style="direction: rtl !important;">گلستان، کلاله</div>
             </div>
-          </form>
-          <h6 class="text-secondary text-uppercase mt-4 mb-3">Follow Us</h6>
-          <div class="d-flex">
-            <a class="btn btn-primary btn-square mr-2" href="#"><i class="fab fa-twitter"></i></a>
-            <a class="btn btn-primary btn-square mr-2" href="#"><i class="fab fa-facebook-f"></i></a>
-            <a class="btn btn-primary btn-square mr-2" href="#"><i class="fab fa-linkedin-in"></i></a>
-            <a class="btn btn-primary btn-square" href="#"><i class="fab fa-instagram"></i></a>
+          <p class="mb-2">
+            <i class="fas fa-envelope text-primary mr-3"></i> hameddjf33@gmail.com
+          </p>
+          <p class="mb-0">
+            <i class="fas fa-phone-alt text-primary mr-3"></i>+98 09931835803
+          </p>
+        </div>
+      </div>
+      <div class="col-lg-8 col-md-12" style='direction: rtl !important;'>
+        <div class="row">
+          <div class="col-md-4 mb-5">
+            <h5 class="text-light text-uppercase mb-4">خبرنامه</h5>
+            <p>با عضویت در خبرنامه از تخفیف‌ها و محصولات جدید مطلع شوید.</p>
+            <form action="">
+              <div class="input-group">
+                <input type="email" class="form-control" placeholder="آدرس ایمیل" />
+                <div class="input-group-append">
+                  <a href="{% url 'account:register_page' %}" class="btn btn-primary">عضویت</a>
+                </div>
+              </div>
+            </form>
+            <h6 class="text-light text-uppercase mt-4 mb-3">دنبال کنید :</h6>
+            <div class="d-flex">
+              {% comment %} <a class="btn btn-primary btn-square mr-2" href="#"><i class="fab fa-twitter"></i></a>
+              <a class="btn btn-primary btn-square mr-2" href="#"><i class="fab fa-facebook-f"></i></a>
+              <a class="btn btn-primary btn-square mr-2" href="#"><i class="fab fa-linkedin-in"></i></a>
+              <a class="btn btn-primary btn-square" href="#"><i class="fab fa-instagram"></i></a> {% endcomment %}
+
+              <a class="btn btn-primary btn-square mr-2 icon" href="https://t.me/BN2_hm" >تلگرام</a>
+              <a class="btn btn-primary btn-square mr-2 icon" href="https://www.linkedin.com/in/hamed-moradi-aa8698304/" >لینکدین</a>
+              <a class="btn btn-primary btn-square mr-2 icon" href="mailto:{{ creator.email }}" >ایمیل</a>
+
+            </div>
           </div>
+          <div class="col-md-4 mb-5">
+            <h5 class="text-light text-uppercase mb-4">دسته‌بندی‌ها</h5>
+            <div class="d-flex flex-column justify-content-start">
+              <a class="text-light mb-2" href="{% url 'connect:creators' %}"><i class="fa fa-angle-right mr-2"></i> سازنده </a>
+              <a class="text-light mb-2" href="{% url "home" %}"><i class="fa fa-angle-right mr-2"></i> صفحه اصلی </a>
+              <a class="text-light mb-2" href="{% url 'store'  %}"><i class="fa fa-angle-right mr-2"></i> فروشگاه </a>
+              <a class="text-light mb-2" href="{% url "cart:cart_page" %}"><i class="fa fa-angle-right mr-2"></i> سبد خرید </a>
+              <a class="text-light" href="{% url 'connect:contact' %}"><i class="fa fa-angle-right mr-2"></i> تماس با ما </a>
+              {% comment %} <a class="text-light mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>جزئیات محصول</a> {% endcomment %}
+              {% comment %} <a class="text-light mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>پرداخت</a> {% endcomment %}
+              <a class="text-light" href="{% url "account:profile_page" %}"><i class="fa fa-angle-right mr-2"></i> پروفایل</a>
+              <a class="text-light mb-2" href="{% url "account:login_page" %}"><i class="fa fa-angle-right mr-2"></i> ورود</a>
+              <a class="text-light mb-2" href="{% url "account:register_page" %}"><i class="fa fa-angle-right mr-2"></i> ثبت نام </a>
+
+            </div>
+          </div>
+          <div class="col-md-4 mb-5">
+            <h5 class="text-light text-uppercase mb-4">حساب کاربری</h5>
+            <div class="d-flex flex-column justify-content-start">
+              <a class="text-light mb-2" href="{% url 'connect:creators' %}"><i class="fa fa-angle-right mr-2"></i> سازنده </a>
+              <a class="text-light mb-2" href="{% url "home" %}"><i class="fa fa-angle-right mr-2"></i> صفحه اصلی </a>
+              <a class="text-light mb-2" href="{% url 'store'  %}"><i class="fa fa-angle-right mr-2"></i> فروشگاه </a>
+              {% comment %} <a class="text-light mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>جزئیات محصول</a> {% endcomment %}
+              <a class="text-light mb-2" href="{% url "cart:cart_page" %}"><i class="fa fa-angle-right mr-2"></i> سبد خرید </a>
+              {% comment %} <a class="text-light mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>پرداخت</a> {% endcomment %}
+              <a class="text-light" href="{% url 'connect:contact' %}"><i class="fa fa-angle-right mr-2"></i> تماس با ما </a>
+              <a class="text-light" href="{% url "account:profile_page" %}"><i class="fa fa-angle-right mr-2"></i> پروفایل</a>
+              <a class="text-light" href="{% url "account:login_page" %}"><i class="fa fa-angle-right mr-2"></i> ورود</a>
+              <a class="text-light" href="{% url "account:register_page" %}"><i class="fa fa-angle-right mr-2"></i> ثبت نام </a>
+            </div>
+          </div>
+          
         </div>
       </div>
     </div>
-  </div>
-  <div class="row border-top mx-xl-5 py-4" style="border-color: rgba(256, 256, 256, .1) !important;">
-    <div class="col-md-6 px-xl-0">
-      <p class="mb-md-0 text-center text-md-left text-secondary">
-        &copy; <a class="text-primary" href="#">Domain</a>. All Rights Reserved. Designed by
-        <a class="text-primary" href="https://htmlcodex.com">HTML Codex</a>
-      </p>
+    <div class="row border-top mx-xl-5 py-4" style="border-color: rgba(256, 256, 256, .1) !important;">
+      <div class="col-md-6 px-xl-0">
+        <p class="mb-md-0 text-center text-md-left text-light">
+          &copy; <a class="text-primary" href="#">نام دامنه</a>. همه حقوق محفوظ است. طراحی شده توسط
+          <a class="text-primary" href="https://htmlcodex.com">hameddjf</a>
+        </p>
+      </div>
+      <div class="col-md-6 px-xl-0 text-center text-md-right">
+        <img class="img-fluid" src="{% static "img/payments.png" %}" alt="" />
+      </div>
     </div>
-    <div class="col-md-6 px-xl-0 text-center text-md-right">
-      <img class="img-fluid" src="{% static "img/payments.png" %}" alt="" />
-    </div>
   </div>
-</div>
 </footer><!-- Footer End -->
 {% comment %} برای زمانی ک نخوام کراسل عکس رو استفاده کنم بجاش لیست کامل عکسارو همراه عکس اصلی ببینم {% endcomment %}
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>

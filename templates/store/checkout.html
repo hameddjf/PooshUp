@@ -1,10 +1,24 @@
 {% extends "base.html" %}
 {% load static %}
 {% load custom_tags %}
-
+{% load widget_tweaks %}
 {% block main %}
 <style>
-
+    .p-30 {
+        padding: 15px;
+    }
+    @media (min-width: 992px) {
+        .col-lg-8 {
+            flex: 60%;
+            max-width: 60%;
+        }
+    }
+    @media (min-width: 992px) {
+        .col-lg-4 {
+            flex: 40%;
+            max-width: 40%;
+        }
+    }
     .direction {
       direction: rtl; 
       text-align: right; 
@@ -26,30 +40,126 @@
 </style>
     <!-- Checkout Start -->
     <div class="direction row px-xl-5">
+        <h2>اطلاعات کاربر</h2>
+        <hr>
+        
         <form action="{% url 'order:place_order_page' %}" method='POST'>
             {% csrf_token %}
+            {{ form.as_p }}
             <div class="row">
                 <div class="col-lg-8">
                     <div class="bg-light p-30 mb-5">
                         <div class="row">
+                            <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+                            <script>
+                            $(document).ready(function() {
+                                // Validate Tag
+                                $('input[name="tag"]').on('change', function() {
+                                try {
+                                    let tag = $(this).val();
+                                    validateTag(tag);
+                                    $(this).removeClass('is-invalid');
+                                    $(this).next('.error-message').text('');
+                                } catch (e) {
+                                    $(this).addClass('is-invalid');
+                                    $(this).next('.error-message').text(e.message);
+                                }
+                                });
+
+                                // Validate Email
+                                $('input[name="email"]').on('change', function() {
+                                try {
+                                    let email = $(this).val();
+                                    validateEmail(email);
+                                    $(this).removeClass('is-invalid');
+                                    $(this).next('.error-message').text('');
+                                } catch (e) {
+                                    $(this).addClass('is-invalid');
+                                    $(this).next('.error-message').text(e.message);
+                                }
+                                });
+
+                                // Validate Phone
+                                $('input[name="phone"]').on('change', function() {
+                                try {
+                                    let phone = $(this).val();
+                                    validatePhone(phone);
+                                    $(this).removeClass('is-invalid');
+                                    $(this).next('.error-message').text('');
+                                } catch (e) {
+                                    $(this).addClass('is-invalid');
+                                    $(this).next('.error-message').text(e.message);
+                                }
+                                });
+
+                                // Validate Postal Code
+                                $('input[name="postal_code"]').on('change', function() {
+                                try {
+                                    let postalCode = $(this).val();
+                                    validatePostalCode(postalCode);
+                                    $(this).removeClass('is-invalid');
+                                    $(this).next('.error-message').text('');
+                                } catch (e) {
+                                    $(this).addClass('is-invalid');
+                                    $(this).next('.error-message').text(e.message);
+                                }
+                                });
+                            });
+
+                            function validateTag(tag) {
+                                if (isNaN(tag) || parseInt(tag) <= -1) {
+                                throw new Error("پلاک باید یک عدد صحیح مثبت باشد.");
+                                }
+                                return tag;
+                            }
+
+                            function validateEmail(email) {
+                                const emailRegex = /^[\w\.-]+@(gmail|yahoo|hotmail|outlook|live|mail)\.com$/;
+                                if (!emailRegex.test(email)) {
+                                throw new Error("لطفا یک آدرس ایمیل معتبر وارد کنید.");
+                                }
+                                return email;
+                            }
+
+                            function validatePhone(phone) {
+                                phone = phone.replace('-', '').replace(' ', '').replace('+98', '0');
+                                if (phone.length !== 11) {
+                                throw new Error("شماره موبایل باید 11 رقم باشد.");
+                                }
+                                if (!phone.startsWith('09')) {
+                                throw new Error("شماره موبایل باید با 09 شروع شود.");
+                                }
+                                return phone;
+                            }
+
+                            function validatePostalCode(postalCode) {
+                                if (isNaN(postalCode) || postalCode.length !== 10) {
+                                throw new Error("کد پستی باید 10 رقم عددی باشد.");
+                                }
+                                return postalCode;
+                            }
+                            </script>
                             <div class="col-md-12 form-group">
                                 <h4>مشخصات گیرنده </h4> 
                             </div>
+
                             <div class="col-md-6 form-group">
                                 <label>نام</label>
-                                <input class="form-control" type="text" name='first_name' placeholder="نام شما" required />
+                                <input class="form-control" type="text" name='first_name' title='لطفا این قسمت را پر کنید.' placeholder="نام شما" required/>
                             </div>
                             <div class="col-md-6 form-group">
                                 <label>نام خوانوادگی</label>
-                                <input class="form-control" type="text" name='last_name' placeholder="نام خوانوادگی شما" required/>
+                                <input class="form-control" type="text" name='last_name' title='لطفا این قسمت را پر کنید.' placeholder="نام خوانوادگی شما" required/>
                             </div>
                             <div class="col-md-6 form-group">
-                                <label>ایمیل</label>
-                                <input class="form-control" type="email" name='email' placeholder="ایمیل شما" />
+                                <label for="email">ایمیل</label>
+                                <input class="form-control" type="email" id="email" name="email" title='لطفا این قسمت را پر کنید.' placeholder="ایمیل شما" required onchange="validate_email(this.value)">
+                                <span class="error-message text-danger"></span>
                             </div>
                             <div class="col-md-6 form-group">
-                                <label>شماره تماس</label>
-                                <input class="form-control" type="text" name='phone' placeholder="شماره تماس شما" required/>
+                                <label for="phone">شماره تماس</label>
+                                <input class="form-control" style='direction:rtl' type="tel" id="phone" name="phone" title='لطفا این قسمت را پر کنید.' placeholder="شماره تماس شما" required pattern="^((\+98)|0)?9\d{9}$" onchange="validate_phone(this.value)">
+                                <span class="error-message text-danger"></span>
                             </div>
                             <div class="col-md-12 form-group">
                                 <hr>
@@ -57,32 +167,108 @@
                             </div>
                             <div class="col-md-6 form-group">
                                 <label>کد پستی</label>
-                                <input class="form-control" type="text" name='postal_code' placeholder="123 Street" required/>
+                                <input class="form-control" type="text" name='postal_code' title='لطفا این قسمت را پر کنید.' placeholder="123 Street" required onchange="validate_postal_code(this.value)">
+                                <span class="error-message text-danger"></span>
                             </div>
+
+
+                            {% comment %} <div class="col-md-12 form-group">
+                                <label for="first_name">نام:</label>
+                                {{ form.first_name|add_class:"form-control" }}
+                                {% for error in form.first_name.errors %}
+                                    <div class="invalid-feedback">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        
+                            <div class="col-md-12 form-group">
+                                <label for="last_name">نام خانوادگی:</label>
+                                {{ form.last_name }}
+                                {% for error in form.last_name.errors %}
+                                    <div class="invalid-feedback">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        
+                            <div class="col-md-12 form-group">
+                                <label for="phone">شماره تماس:</label>
+                                {{ form.phone }}
+                                {% for error in form.phone.errors %}
+                                    <div class="invalid-feedback">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        
+                            <div class="col-md-12 form-group">
+                                <label for="email">ایمیل:</label>
+                                {{ form.email }}
+                                {% for error in form.email.errors %}
+                                    <div class="invalid-feedback">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        
+                            <div class="col-md-12 form-group">
+                                <label for="address_line_1">آدرس تحویل:</label>
+                                {{ form.address_line_1 }}
+                                {% for error in form.address_line_1.errors %}
+                                    <div class="invalid-feedback">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                            <div class="col-md-12 form-group">
+                                <hr>
+                                <h4>آدرس گیرنده </h4> 
+                            </div>
+                            <div class="col-md-12 form-group">
+                                <label for="postal_code">کد پستی:</label>
+                                {{ form.postal_code }}
+                                {% for error in form.postal_code.errors %}
+                                    <div class="invalid-feedback">{{ error }}</div>
+                                {% endfor %}
+                            </div> {% endcomment %}
+
+
+                            
                             <div class="col-md-6 form-group">
                                 <label>آدرس تحویل</label>
-                                <input class="form-control" type="text" name='address_line_1' placeholder="123 Street" required/>
+                                <input class="form-control" type="text" name='address_line_1' title='لطفا این قسمت را پر کنید.' placeholder="123 Street" required/>
                             </div>
                             <div class="col-md-3 form-group">
                                 <label>استان</label>
-                                <input class="form-control" type="text" name='state' placeholder="123 Street" required/>
+                                <select class="form-control" name="state" title='لطفا استان محل زندگدگیتان را انتخاب کنید.' id="state" required>
+                                    <option value="">انتخاب استان</option>
+                                    {% for state in states %}
+                                    <option value="{{ state.id }}">{{ state.name }}</option>
+                                    {% endfor %}
+                                </select>
                             </div>
+                            <script>
+                                document.getElementById('state').addEventListener('change', function() {
+                                    var stateId = this.value;
+                                    fetch(`https://iran-locations-api.ir/api/v1/fa/cities?state_id=${stateId}`)
+                                        .then(response => response.json())
+                                        .then(data => {
+                                            var citySelect = document.getElementById('city');
+                                            citySelect.innerHTML = '<option value="">انتخاب شهر</option>';
+                                            data.forEach(city => {
+                                                var option = document.createElement('option');
+                                                option.value = city.id;
+                                                option.text = city.name;
+                                                citySelect.add(option);
+                                            });
+                                        });
+                                });
+                            </script>
                             <div class="col-md-3 form-group">
                                 <label>شهر</label>
-                                <input class="form-control" type="text" name='city' placeholder="123 Street" required/>
+                                <select class="form-control" name="city" id="city" title='لطفا ابتدا استان را انتخاب کنید.' required>
+                                    <option value="">انتخاب شهر</option>
+                                </select>
                             </div>
                             <div class="col-md-3 form-group">
                                 <label>خیابان</label>
-                                <input class="form-control" type="text" name='street' placeholder="123 Street" required/>
+                                <input class="form-control" type="text" name='street' title='لطفا این قسمت را پر کنید.' placeholder="123 Street" required/>
                             </div>
                             <div class="col-md-3 form-group">
                                 <label>پلاک</label>
-                                <input class="form-control" type="text" name='tag' placeholder="123 Street" required/>
+                                <input class="form-control" type="text" name='tag' title='لطفا این قسمت را پر کنید.' placeholder="123 Street" required/>
                             </div>
-                            {% comment %} <div class="col-md-3 form-group">
-                                <label>واحد</label>
-                                <input class="form-control" type="text" name='unit' placeholder="123 Street" required/>
-                            </div> {% endcomment %}
                         </div>
                     </div>
                 </div>
@@ -91,9 +277,13 @@
                         <thead class="thead-dark">
                             <tr>
                                 <th>محصولات</th>
-                                <th>قیمت</th>
+                                <th>قیمت محصول</th>
                                 <th>تعداد</th>
-                                <th>قیمت کل</th>
+                                {% if 'coupon_code' in request.session %}
+                                    <th>قیمت کل با کوپون</th>
+                                {% else %}
+                                    <th>قیمت کل</th>
+                                {% endif %}
                             </tr>
                         </thead>
                         <tbody class="align-middle">
@@ -114,13 +304,24 @@
                                             </p>
                                         </figcaption>
                                     </td>
-                                    <td class="align-middle">{{cart_item.product.price|format_price}}</td>
+                                    {% if cart_item.product.discount == 0 %}
+                                        <td class="align-middle">{{cart_item.product.price|format_price}}</td>
+                                    {% else %}
+                                        <td class="align-middle">{{cart_item.product.discount_price|format_price}}</td>
+                                    {% endif %}
                                     <td class="align-middle">
                                         <div class="input-group quantity mx-auto" style="width: 100px;">
                                             <label class="custom-label">{{cart_item.quantity}}</label>
                                         </div>
                                     </td>
-                                    <td class="align-middle">{{cart_item.sub_total|format_price}}</td>
+                                    {% if 'coupon_code' in request.session %}
+                                        <td class="align-middle">
+                                        <del>{{cart_item.sub_total|format_price}}</del>
+                                        <h5 class="align-middle"> {{ request.session.total_price_with_coupon|format_price }}<h5>
+                                        </td>
+                                    {% else %}
+                                        <td class="align-middle">{{cart_item.sub_total|format_price}}</td>
+                                    {% endif %}
                                 </tr>
                             {% endfor %}
                         </tbody>

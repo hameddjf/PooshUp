@@ -10,8 +10,8 @@ class Cart(models.Model):
     date_added = models.DateField(auto_now_add=True)
 
     class Meta:
-        verbose_name = ("کالا")
-        verbose_name_plural = ("کالاها")
+        verbose_name = ("سبد خرید")
+        verbose_name_plural = ("سبد های خرید")
 
     def __str__(self):
         return self.cart_id
@@ -24,15 +24,21 @@ class CartItem(models.Model):
     user = models.ForeignKey(
         "accounts.Account", verbose_name=_("کاربر"),
         on_delete=models.CASCADE, null=True)
-    cart = models.ForeignKey(Cart, on_delete=models.CASCADE, null=True)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    variations = models.ManyToManyField(
-        Variation, verbose_name=_("واریانت ها"), blank=True)
-    quantity = models.IntegerField(default=1)
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE, null=True)
+    coupon = models.ForeignKey(
+        'coupons.Coupon', on_delete=models.SET_NULL, null=True, blank=True)
+    quantity = models.IntegerField()
     is_active = models.BooleanField(default=True)
 
+    variations = models.ManyToManyField(
+        Variation, verbose_name=_("واریانت ها"), blank=True)
+
     def sub_total(self):
-        return self.product.price * self.quantity
+        if self.product.discount_price:
+            return self.product.discount_price * self.quantity
+        else:
+            return self.product.price * self.quantity
 
     class Meta:
         verbose_name = ("کالا سبد خرید")

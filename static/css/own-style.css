@@ -1,4 +1,12 @@
+@font-face {
+  font-family:"fontVazir";
+  src:
+      url("/static/fonts/Vazir.ttf") format("truetype"),   url("/static/fonts/Vazir.woff") format("woff"),   url("/static/fonts/Vazir.woff2") format("woff2")
+}
+
+
 body {
+
   /* text-align: justify;  */
   text-align-last: inherit; 
 

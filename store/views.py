@@ -13,6 +13,7 @@ from category.models import Category
 from carts.models import Cart, CartItem
 from orders.models import OrderProduct
 from carts.views import _cart_id
+from like.views import LikeItemView
 # Create your views here.
 
 
@@ -158,11 +159,17 @@ class ProductDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         single_product = context['single_product']
+        category = single_product.category
+        related_products = Product.objects.filter(
+            category=category).exclude(id=single_product.id)[:4]
         request = self.request
 
-        cart = Cart.objects.get(cart_id=_cart_id(request=request))
-        in_cart = CartItem.objects.filter(
-            cart=cart, product=single_product).exists()
+        try:
+            cart = Cart.objects.get(cart_id=_cart_id(request=request))
+            in_cart = CartItem.objects.filter(
+                cart=cart, product=single_product).exists()
+        except Cart.DoesNotExist:
+            in_cart = False
 
         if request.user.is_authenticated:
             orderproduct = OrderProduct.objects.filter(
@@ -187,6 +194,7 @@ class ProductDetailView(DetailView):
             'product_gallery': product_gallery,
             'color_variations': color_variations,
             'size_variations': size_variations,
+            'related_products': related_products,
         })
         return context
 

@@ -10,8 +10,8 @@ from category.models import Category
 
 
 variation_category_choice = (
-    ('color', 'color'),
-    ('size', 'size'),
+    ('color',  'رنگ'),
+    ('size', 'اندازه'),
 )
 
 
@@ -70,7 +70,10 @@ class Product(models.Model):
 
     @property
     def discount_price(self):
-        return self.price * (1-(self.discount / 100))
+        if self.discount > 0:
+            return self.price * (1 - (self.discount / 100))
+        else:
+            return self.price
 
     def get_url(self):
         return reverse('products_detail', args=[self.category.slug, self.slug])

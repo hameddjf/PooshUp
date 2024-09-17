@@ -1,24 +1,24 @@
-# from django import forms
-# from django.db import IntegrityError
+import requests
+
 from django.contrib import messages, auth
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.sites.shortcuts import get_current_site
 from django.contrib.auth.tokens import default_token_generator
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.template.loader import render_to_string
+from django.views.generic import ListView
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.core.mail import EmailMessage
-# from django.http import HttpResponse
 
 from .forms import RegistrationForm, UserForm, UserProfileForm
 from .models import Account, UserProfile
 
 from carts.models import Cart, CartItem
 from carts.views import _cart_id
-from orders.models import Order, OrderProduct
+from orders.models import Order, OrderProduct, Payment
 
-import requests
 # Create your views here.
 
 
@@ -245,14 +245,30 @@ def reset_password(request):
         return render(request, 'accounts/password-update.html')
 
 
-@login_required(login_url='account:login_page')
-def my_orders(request):
-    orders = Order.objects.filter(
-        user=request.user, is_ordered=True).order_by('-created_at')
-    context = {
-        'orders': orders,
-    }
-    return render(request, 'accounts/my_orders.html', context)
+class MyOrdersView(LoginRequiredMixin, ListView):
+    template_name = 'accounts/my_orders.html'
+    context_object_name = 'orders_data'
+    login_url = 'account:login_page'
+
+    def get_queryset(self):
+        user = self.request.user
+        orders = Order.objects.filter(
+            user=user, is_ordered=True).order_by('-created_at')
+        orders_data = self.get_orders_data(orders)
+        return orders_data
+
+    def get_orders_data(self, orders):
+        orders_data = []
+        for order in orders:
+            order_products = OrderProduct.objects.filter(order=order)
+            payment = Payment.objects.filter(order=order).first()
+            order_data = {
+                'order': order,
+                'order_products': order_products,
+                'payment': payment,
+            }
+            orders_data.append(order_data)
+        return orders_data
 
 
 @login_required(login_url='account:login_page')

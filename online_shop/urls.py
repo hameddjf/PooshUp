@@ -21,10 +21,15 @@ from django.conf.urls.static import static
 
 from category.views import BaseView
 
+from azbankgateways.urls import az_bank_gateways_urls
+
+admin.autodiscover()
+
 # app_name = 'online_shop'
 urlpatterns = [
-    path('admin/', include('admin_honeypot.urls', namespace='admin_honeypot')),
-    path('securelogin/', admin.site.urls),
+    # path('admin/', include('admin_honeypot.urls', namespace='admin_honeypot')),
+    # path('securelogin/', admin.site.urls),
+    path('admin/', admin.site.urls),
 
     path('', BaseView.as_view(), name='home'),
     path('store/', include('store.urls')),
@@ -33,7 +38,10 @@ urlpatterns = [
     path('orders/', include('orders.urls')),
     path('connect/', include('connect.urls', namespace='connect')),
     path('discount/', include('discount.urls')),
+    path('coupons/', include('coupons.urls')),
+    path('like/', include('like.urls')),
 
 
+    path("bankgateways/", az_bank_gateways_urls()),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

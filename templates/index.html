@@ -54,7 +54,7 @@
   body {
     display: block !important;
     background-color: #F5F5F5;
-    font-family: Arial, sans-serif;
+    {% comment %} font-family: Arial, sans-serif; {% endcomment %}
     margin: 0;
     padding: 20px;
 }
@@ -94,7 +94,7 @@
     box-shadow: 0 0 30px #DDDDDD;
 }
 
-.product-item:hover .product-action a.btn {
+{% comment %} .product-item:hover .product-action a.btn {
     opacity: 1;
     margin-top: 0;
 }
@@ -119,7 +119,7 @@
 
 .product-item .btn:hover {
     color: #FFD333 !important;
-}
+} {% endcomment %}
 
 .filter-options {
     display: flex;
@@ -186,6 +186,7 @@
 .pl-3, .px-3 {
     text-align: center;
 }
+
    </style>
   <!-- Carousel Start -->
   <div class="container-fluid mb-3">
@@ -230,7 +231,7 @@
         </div>
     </div>
 </div>
-  <!-- Carousel End -->  
+<!-- Carousel End -->  
   
 </div>
 
@@ -373,11 +374,31 @@
                                 </a>
                                 <div class="product-action">
                                     {% if product.stock >= 1 %}
-                                        <a class="btn btn-outline-dark btn-square" href="{% url 'cart:add_to_cart_page' product.id %}"><i class="fa fa-shopping-cart"></i></a>
+                                    <a class="btn btn-outline-dark btn-square" href="{% url 'cart:add_to_cart_page' product.id %}">
+                                        <i class="fa fa-shopping-cart"></i>
+                                    </a>
                                     {% else %}
-                                        <a class="btn btn-outline-dark btn-square" disabled><i class="fa fa-shopping-cart"></i></a>
+                                        <a class="btn btn-outline-dark btn-square" disabled>
+                                            <i class="fa fa-shopping-cart"></i>
+                                        </a>
                                     {% endif %}
-                                    <a class="btn btn-outline-dark btn-square" href="#"><i class="far fa-heart"></i></a>
+                                    {% comment %} <a class="btn btn-outline-dark btn-square" href="#"><i class="far fa-heart"></i></a> {% endcomment %}
+                                    {% comment %} <form action="{% url 'like:like_item' product.id %}"  method="post">
+                                        {% csrf_token %}
+                                        <a class="btn btn-outline-dark btn-square">
+                                          <button type="submit" class="btn ">
+                                            <i class="far fa-heart"></i>
+                                          </button>
+                                        </a>
+                                    </form> {% endcomment %}
+                                    <form action="{% url 'like:like_item' product.id %}"  method="post">
+                                        {% csrf_token %}
+                                        <a class="btn btn-outline-dark btn-square">
+                                          <button type="submit" class="btn ">
+                                            <i class="far fa-heart"></i>
+                                          </button>
+                                        </a>
+                                    </form>
                                     <a class="btn btn-outline-dark btn-square" href="#"><i class="fas fa-sync-alt"></i></a>
                                     <a class="btn btn-outline-dark btn-square" href="{{ product.get_url }}"><i class="fa fa-search"></i></a>
                                 </div>
@@ -421,6 +442,10 @@
         <div class="swiper-button-prev swiper-navBtn"></div>
         <div class="swiper-pagination"></div>
     </div>
+
+    <div class="divider"></div>
+
+
 {% endfor %}
   
   <script src="{% static 'js/slider/swiper-bundle.min.js' %}"></script>

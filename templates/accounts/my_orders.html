@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 
+{% load custom_tags %}
 
 {% block main %}
 <style>
@@ -18,54 +19,72 @@
         color: #245aea;}
 </style>
 <section class="section-conten padding-y bg direction">
+    {% include 'alerts/alerts.html' %}
+    <div class="container">
+        <div class="row">
+            {% include 'includes/profile_sidebar.html' %}
+            <main class="col-md-9">
+                {% for order_data in orders_data %}
+                <article class="card mb-4">
+                    <header class="card-header">
+                        <strong class="d-inline-block mr-3">جزئیات سفارش شماره {{ order_data.order.order_number }}</strong>
+                    </header>
+                    <div class="card-body">
+                        <h5>اطلاعات سفارش</h5>
+                        <table class="table">
+                            <tr>
+                                <th>شماره سفارش</th>
+                                <td>{{ order_data.order.order_number }}</td>
+                            </tr>
+                            <tr>
+                                <th>نام کامل</th>
+                                <td>{{ order_data.order.full_name }}</td>
+                            </tr>
+                            <tr>
+                                <th>شماره تلفن</th>
+                                <td>{{ order_data.order.phone }}</td>
+                            </tr>
+                            <tr>
+                                <th>تاریخ سفارش</th>
+                                <td>{{ order_data.order.created_at }}</td>
+                            </tr>
+                            <tr>
+                                <th>مبلغ کل</th>
+                                <td>{{ order_data.order.grand_total|format_price }} تومان</td>
+                            </tr>
+                        </table>
+						<hr>
+                        <h5>جزئیات محصولات</h5>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>نام محصول</th>
+                                    <th>قیمت محصولات</th>
+                                    <th>تعداد محصول</th>
+                                    <th>هزینه کل سفارش</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in order_data.order_products %}
+                                <tr>
+                                    <td>{{ item.product.title }}</td>
+                                    <td>{{ item.order.order_total|format_price }} </td>
+                                    <td>{{ item.quantity}}</td>
+                                    <td>{{ item.order.grand_total|format_price}} </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
 
-{% include 'alerts/alerts.html' %}
-<div class="container">
-	<div class="row">
-	{% include 'includes/profile_sidebar.html' %}
-	<main class="col-md-9">
-		<article class="card">
-		<header class="card-header">
-			<strong class="d-inline-block mr-3">سابقه سفارش شما</strong>
-
-		</header>
-		<div class="card-body">
-			<div class="row">
-			<div class="col-md-12">
-				<table class="table table-hover">
-				  <thead>
-				    <tr>
-				      <th scope="col">سفارش #</th>
-				      <th scope="col">نام صورتحساب</th>
-				      <th scope="col">شماره تلفن</th>
-				      <th scope="col">تمام سفارشات</th>
-							<th scope="col">تاریخ</th>
-				    </tr>
-				  </thead>
-				  <tbody>
-						{% for order in orders %}
-				    <tr>
-				      <th scope="row"><a href="{% url 'account:order_detail_page' order.order_number %}">{{order.order_number}}</a></th>
-				      <td>{{order.full_name}}</td>
-				      <td>{{order.phone}}</td>
-				      <td>{{ order.order_total|floatformat:0 }}</td>
-							<td>{{order.created_at}}</td>
-				    </tr>
-				{% endfor %}
-
-				  </tbody>
-				</table>
-			</div>
-
-			</div> <!-- row.// -->
-		</div> <!-- card-body .// -->
-
-		</article> <!-- order-group.// -->
-	</main>
-</div> <!-- row.// -->
-</div>
-
-
+                        
+                    </div>
+                </article>
+                {% empty %}
+                <p>شما هنوز سفارشی ثبت نکرده‌اید.</p>
+                {% endfor %}
+            </main>
+        </div>
+    </div>
 </section>
 
 {% endblock %}
