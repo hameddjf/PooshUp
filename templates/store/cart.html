@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% load static %}
 {% load custom_tags %}
+{% load coupon_utils %}
 
 {% block main %}
 
@@ -69,9 +70,12 @@
                         </p>
                       </figcaption>
                     </td>
-                    <td class="align-middle">{{cart_item.product.price|format_price}}</td>
+                    {% if cart_item.product.discount == 0 %}
+                        <td class="align-middle">{{cart_item.product.price|format_price}}</td>
+                    {% else %}
+                        <td class="align-middle">{{cart_item.product.discount_price|format_price}}</td>
+                    {% endif %}
                     <td class="align-middle">
-
                       {% comment %}  ی باگ میخورد ک برداشتمش ت دکمه بعلاوه quantity بخاطر کلاس  {% endcomment %}
                       <div class="col"> 
                         <div class="input-group mx-auto" style="width: 100px;" >
@@ -102,34 +106,66 @@
           </table>
         </div>
         <div class="col-lg-4">
+          <form id="coupon-form"  action="{% url 'coupons:apply_coupon' %}" method="post">
             <div class="input-group">
-              <input type="text" class="form-control border-0 p-4 floatformat : right" placeholder="کد کوپون" />
-              <div class="input-group-append">
-                <button class="btn btn-primary">اعمال کوپون</button>
-              </div>
+                <input type="text" name="coupon_code" class="form-control border-0 p-4 floatformat : right" placeholder="کد کوپن" required />
+                <div class="input-group-append">
+                    {% for cart_item in cart_items %}
+                      <input type="hidden" name="cart_items[]" value="{{ cart_item.id }}">
+                    {% endfor %}
+                    {% csrf_token %}
+                      <button class="btn btn-sm btn-primary btn-plus" type="submit">اعمال کوپن</button>
+                </div>
             </div>
+        </form>
+
           <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-secondary pr-3">خلاصه سبد خرید</span></h5>
           <div class="bg-light p-30 mb-5">
             <div class="border-bottom pb-2">
-              <div class="d-flex justify-content-between mb-3">
-                <h6>قیمت کل</h6>
-                <h6>{{total|format_price}}</h6>
-              </div>
-              <div class="d-flex justify-content-between">
-                <h6 class="font-weight-medium">مالیات</h6>
-                <h6 class="font-weight-medium">{{tax|format_price}}</h6>
-              </div>
+                {% comment %} {% if 'coupon_code' in request.session %}
+                <div class="d-flex justify-content-between mb-3">
+                    <h6>قیمت کل </h6>
+                    <h5>{{ total|format_price }}</h5>
+
+                </div>
+                <div class="d-flex justify-content-between">
+                    <h6 class="font-weight-medium" >تخفیف کوپن: </h6>
+                    <h6> {{ request.session.coupon_code }} ({{ request.session.discount_percent }}%)</h6>
+                </div>
+                {% else %}
+                <div class="d-flex justify-content-between mb-3">
+                    <h6>قیمت کل</h6>
+                    <h5>{{ total|format_price }}</h5>
+                </div>
+                {% endif %}
+                <div class="d-flex justify-content-between">
+                    <h6 class="font-weight-medium">مالیات</h6>
+                    <h6 class="font-weight-medium">{{ tax|format_price }}</h6>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <h5> مجموع کل قابل پرداخت</h5>
+                  {% if 'coupon_code' in request.session %}
+                    <h6>{{ request.session.total_price_with_coupon|format_price }}</h6>
+                  {% else %}
+                    <h5>{{ grand_total|format_price }}</h5>
+                  {% endif %} {% endcomment %}
+                  <div class="d-flex justify-content-between mb-3">
+                      <h6>قیمت کل</h6>
+                      <h5>{{ total|format_price }}</h5>
+                  </div>
+                  <div class="d-flex justify-content-between">
+                      <h6 class="font-weight-medium">مالیات</h6>
+                      <h6 class="font-weight-medium">{{ tax|format_price }}</h6>
+                  </div>
+                  <div class="d-flex justify-content-between">
+                      <h5> مجموع کل قابل پرداخت</h5>
+                      <h5>{{ grand_total|format_price }}</h5>
+                </div>
             </div>
             <div class="pt-2">
-              <div class="d-flex justify-content-between mt-2">
-                <h5>مجموع کل</h5>
-                <h5>{{grand_total|format_price}}</h5>
-              </div>
-              <a href="{% url "cart:checkout_page" %}" class="btn btn-block btn-primary font-weight-bold my-3 py-3">ادامه به صفحه پرداخت</a>
-              <a href="{% url 'store' %}" class="btn btn-block btn-success font-weight-bold my-3 py-3">ادامه خرید</a>
-
+                <a href="{% url 'cart:checkout_page' %}" class="btn btn-block btn-primary font-weight-bold my-3 py-3">ادامه به صفحه پرداخت</a>
+                <a href="{% url 'store' %}" class="btn btn-block btn-success font-weight-bold my-3 py-3">ادامه خرید</a>
             </div>
-          </div>
         </div>
       </div>
 

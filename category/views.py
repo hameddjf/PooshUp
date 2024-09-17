@@ -64,6 +64,22 @@ class BaseView(ListView):
         else:
             context['products'] = Product.objects.all()
 
+        # گرفتن محصول مد نظر
+        product_id = self.request.GET.get('product_id')
+        if product_id:
+            product = get_object_or_404(Product, id=product_id)
+
+            # پیدا کردن دسته‌بندی‌های مرتبط
+            related_categories = get_related_categories(product.category)
+
+            # قرار دادن دسته‌بندی‌های مرتبط در کانتکست
+            context['related_categories'] = related_categories
+
+            # گرفتن محصولات مرتبط با این دسته‌بندی‌ها
+            related_products = Product.objects.filter(
+                category__in=related_categories)
+            context['related_products'] = related_products
+
         queryset = context['products']
         if min_price and max_price:
             queryset = queryset.filter(

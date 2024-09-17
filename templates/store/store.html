@@ -24,11 +24,11 @@
                 <div class="col-lg-3 col-md-4">
                     <!-- Price Start -->
                     <div class="border-bottom mb-4 pb-4">
-                        <h5 class="font-weight-semi-bold mb-4">Filter by price</h5>
+                        <h5 class="font-weight-semi-bold mb-4">فیلتر بر اساس قیمت</h5>
                         <form method="get" action="{% url 'store' %}">
                             <div class="custom-control custom-checkbox d-flex align-items-center mb-3">
                                 <input type="checkbox" class="custom-control-input" {% if not selected_price_range %}checked{% endif %} id="price-all" name="price" value="">
-                                <label class="custom-control-label" for="price-all">All Price</label>
+                                <label class="custom-control-label" for="price-all">تمامی قیمت ها</label>
                                 <span class="badge badge-primary badge-pill ml-auto">{{ product_count }}</span>
                             </div>
                             {% for price_range, count in price_ranges %}
@@ -39,7 +39,7 @@
                                 <span class="badge badge-primary badge-pill ml-auto">{{ count }}</span>
                             </div>
                             {% endfor %}
-                            <button type="submit" class="btn btn-primary btn-block">Filter</button>
+                            <button type="submit" class="btn btn-primary btn-block">فیلتر</button>
                         </form>
                     </div>
                     <!-- Price End -->
@@ -156,14 +156,13 @@
                                 </div>
                                 <div class="text-center py-4">
                                     <a class="h6 text-decoration-none text-truncate" href="{{product.get_url}}">{{product.title}}</a>
-                                    <div class="d-flex align-items-center justify-content-center mt-2">
+                                    <div class="d-flex align-items-center justify-content-center mt-2" style='direction:rtl;'>
                                         {% if product.discount == 0 %}
-                                        <h5>${{product.price}}</h5>
-                                        {% endif %}
-                                        {% if product.discount > 0 %}
-                                        <h5>${{product.discount_price}}</h5>
+                                            <h5>{{product.price|format_price}}</h5>
+                                        {% else %}
+                                            <h5>{{product.discount_price|format_price}}</h5>
                                         {% comment %} <h5>%{{product.discount}}</h5>   نمایش درصد تخفیف    {% endcomment %}
-                                        <h6 class="text-muted ml-2"><del>${{product.price}}</del></h6>
+                                            <h6 class="text-muted ml-2"><del>{{product.price|format_price}}</del></h6>
                                         {% endif %}
                                     </div>
                                     <div class="d-flex align-items-center justify-content-center mb-1">

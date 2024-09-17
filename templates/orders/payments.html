@@ -37,6 +37,38 @@
 
 .form-control {
     width: 100%;}
+
+    .custom-checkbox-icon {
+      display: inline-block;
+      width: 24px;
+      height: 24px;
+      position: relative;
+      transition: background-color 0.3s, border-color 0.3s;
+    }
+    
+    .custom-checkbox-icon-outline {
+      position: absolute;
+      top: 0;
+      left: 0;
+      opacity: 1;
+      transition: opacity 0.3s;
+    }
+    
+    .custom-checkbox-icon-check {
+      position: absolute;
+      top: 0;
+      left: 0;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    
+    .custom-control-input:checked ~ .custom-control-label .custom-checkbox-icon-outline {
+      opacity: 0;
+    }
+    
+    .custom-control-input:checked ~ .custom-control-label .custom-checkbox-icon-check {
+      opacity: 1;
+    }
 </style>
 <h4 class=" mb-10 text-center"> سفارش خود را بررسی کنید و پرداخت کنید</h4>
     <!-- Cart Start -->
@@ -48,7 +80,7 @@
                 </div>
                 <div class="card-body">
                   <p class="card-text mb-0">نام و نام خوانوادگی: {{order.full_name}}</p>
-                  <p class='card-text mb-0'>ادرس تحویل: {{order.full_address}}</p>
+                  <p class='card-text mb-0'>ادرس تحویل: {{order.address_line_1}}</p>
                   <p class='card-text mb-0'>ایمیل: {{order.email}}</p>
                   <p class='card-text mb-0'>شماره تماس: {{order.phone}}</p>
                   {% comment %} {% if order.order_note %}
@@ -62,7 +94,23 @@
                     روش پرداخت
                 </div>
                 <div class="card-body">
-                  <p class="card-text">زرین پال:</p>
+                  <div class="form-group form-check mb-4">
+                    <div class="custom-control custom-checkbox">
+                      <input type="checkbox" class="custom-control-input" id="zarinpal-checkbox">
+                      <label class="custom-control-label d-flex align-items-center" for="zarinpal-checkbox">
+                        <span class="custom-checkbox-icon mr-2">
+                          <svg class="custom-checkbox-icon-outline" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="#0062FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                          </svg>
+                          <svg class="custom-checkbox-icon-check" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="#0062FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                            <path d="M8 12L11 15L16 9" stroke="#0062FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                          </svg>
+                        </span>
+                        <span class="text-primary font-weight-bold">IDPAY</span>
+                      </label>
+                    </div>
+                  </div>
               </div>
               </div>
 
@@ -98,7 +146,11 @@
                                             </p>
                                         </figcaption>
                                     </td>
-                                    <td class="align-middle">{{cart_item.product.price|format_price}}</td>
+                                    {% if cart_item.product.discount == 0 %}
+                                        <td class="align-middle">{{cart_item.product.price|format_price}}</td>
+                                    {% else %}
+                                        <td class="align-middle">{{cart_item.product.discount_price|format_price}}</td>
+                                    {% endif %}
                                     <td class="align-middle">
                                         <div class="input-group quantity mx-auto" style="width: 100px;">
                                             <label class="custom-label">{{cart_item.quantity}}</label>
@@ -113,106 +165,78 @@
                   </div>
 
         </div>
+        <!-- در فایل payments.html -->
         <div class="col-lg-4">
-            <div class="input-group">
-              <input type="text" class="form-control border-0 p-4 floatformat : right" placeholder="کد کوپون" />
-              <div class="input-group-append">
-                <button class="btn btn-primary">اعمال کوپون</button>
-              </div>
+          {% comment %} <div class="input-group">
+            <input type="text" class="form-control border-0 p-4 floatformat : right" placeholder="کد کوپون" name="coupon_code" />
+            <div class="input-group-append">
+              <button class="btn btn-primary" type="button" id="apply-coupon">اعمال کوپون</button>
             </div>
+          </div> {% endcomment %}
           <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-secondary pr-3">خلاصه سبد خرید</span></h5>
           <div class="bg-light p-30 mb-5">
             <div class="border-bottom pb-2">
-              <div class="d-flex justify-content-between mb-3">
-                <h6>قیمت کل</h6>
-                <h6>{{total|format_price}}</h6>
-              </div>
-              <div class="d-flex justify-content-between">
-                <h6 class="font-weight-medium">مالیات</h6>
-                <h6 class="font-weight-medium">{{tax|format_price}}</h6>
-              </div>
-            </div>
-            <div class="pt-2">
-              <div class="d-flex justify-content-between mt-2">
-                <h5>مجموع کل</h5>
-                <h5>{{grand_total|format_price}}</h5>
-              </div>
-              <a href="{% url "cart:checkout_page" %}" class="btn btn-block btn-primary font-weight-bold my-3 py-3"> پرداخت</a>
+                {% if 'coupon_code' in request.session %}
+                  {% comment %} <div class="d-flex justify-content-between mb-3">
+                      <h6>قیمت کل </h6>
+                      <h5>{{ total_price|format_price }}</h5>
+                  </div> {% endcomment %}
+
+                  {% if request.session.discount_percent > 0 %}
+                    <div class="d-flex justify-content-between">
+                        <h6 class="font-weight-medium" >تخفیف کوپن: </h6>
+                        <h6> {{ request.session.coupon_code }} ({{ request.session.discount_percent }}%)</h6>
+                    </div>
+                  {% endif %}
+
+                {% else %}
+                  <div class="d-flex justify-content-between mb-3">
+                      <h6>قیمت کل</h6>
+                      <h5>{{ order_total|format_price }}</h5>
+                  </div>
+                {% endif %}
+
+                <div class="d-flex justify-content-between">
+                    <h6 class="font-weight-medium">مالیات</h6>
+                    <h6 class="font-weight-medium">{{ tax|format_price }}</h6>
+                </div>
+
+                <div class="d-flex justify-content-between">
+                  <h5> مجموع کل قابل پرداخت</h5>
+                  {% if 'coupon_code' in request.session %}
+                    <h5>{{ request.session.total_price_with_coupon|format_price }}</h5>
+                  {% else %}
+                    <h5>{{ grand_total|format_price }}</h5>
+                  {% endif %}
+                </div>
+                <div id="payment-button-container">
+                  <button type="submit" class="btn btn-block btn-primary font-weight-bold my-3 py-3" id="payment-button" disabled>پرداخت</button>
+                  <a href="{% url "order:go_to_gateway" %}" class="btn btn-block btn-primary font-weight-bold my-3 py-3 d-none" id="payment-button-link">پرداخت</a>
+                </div>
+                
+                <script>
+                  const zarinpalCheckbox = document.getElementById('zarinpal-checkbox');
+                  const paymentButton = document.getElementById('payment-button');
+                  const paymentButtonLink = document.getElementById('payment-button-link');
+                
+                  zarinpalCheckbox.addEventListener('change', function() {
+                    if (this.checked) {
+                      paymentButton.disabled = false;
+                      paymentButton.classList.add('active');
+                      paymentButton.classList.add('d-none');
+                      paymentButtonLink.classList.remove('d-none');
+                    } else {
+                      paymentButton.disabled = true;
+                      paymentButton.classList.remove('active');
+                      paymentButton.classList.remove('d-none');
+                      paymentButtonLink.classList.add('d-none');
+                    }
+                  });
+                </script>
             </div>
           </div>
-        </div>
       </div>
     </div>
     <!-- Cart End -->
 
-    <script>
-      function getCookie(name) {
-        let cookieValue = null;
-        if (document.cookie && document.cookie !== '') {
-          const cookies = document.cookie.split(';');
-          for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim();
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-              cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-              break;
-            }
-          }
-        }
-        return cookieValue;
-      }
-    
-      var amount = parseFloat("{{ grand_total }}");
-      var url = "{% url 'order:payments_page' %}";
-      var csrfToken = getCookie('csrftoken');
-      var orderID = "{{ order.order_number }}";
-      var paymentMethod = 'PayPal';
-      var redirectUrl = "{% url 'order:order_complete_page' %}"
-    
-      paypal.Buttons({
-        // Style for button
-        style: {
-                    color:  'blue',
-                    shape:  'pill',
-                    label:  'pay',
-                    height: 40,
-            },
-    
-        // Set up the transaction
-        createOrder: function(data, actions) {
-          return actions.order.create({
-            purchase_units: [{
-              amount: {
-                value: amount
-              }
-            }]
-          });
-        },
-    
-        // Finalize the transaction
-        onApprove: function(data, actions) {
-          return actions.order.capture().then(function(details) {
-            $.ajax({
-              type: 'POST',
-              url: url,
-              data: {
-                'csrfmiddlewaretoken': "{{ csrf_token }}",
-                'orderID': orderID,
-                'transID': details.id,
-                'payment_method': paymentMethod,
-                'status': details.status,
-              },
-              success: function(response) {
-                data = response.data;
-                alert('Transaction completed by ' + details.payer.name.given_name + '!');
-                window.location.href = redirectUrl + '?order_number=' + data["order_number"] + '&payment_id=' + data["transID"];
-              },
-              error: function(response) {
-                error = response.error;
-                alert('تراکنش کامل شد، اما 1 خطا رخ داد: ' + e);
-              }
-            });
-          });
-        }
-      }).render('#paypal-button-container');
-    </script>
 {% endblock main %}

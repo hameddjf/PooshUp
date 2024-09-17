@@ -41,6 +41,7 @@ INSTALLED_APPS = [
 
     'widget_tweaks',
     'admin_honeypot',
+    "azbankgateways",
 
     'carts',
     'category',
@@ -50,6 +51,7 @@ INSTALLED_APPS = [
     'connect',
     'discount',
     'coupons',
+    'like',
 
 ]
 
@@ -92,7 +94,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'online_shop.wsgi.application'
-
 # COSTUMIZING USER MODEL AUTHONTICATION
 AUTH_USER_MODEL = 'accounts.Account'
 
@@ -165,3 +166,32 @@ EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+AZ_IRANIAN_BANK_GATEWAYS = {
+    'GATEWAYS': {
+        'ZARINPAL': {
+            # 'MERCHANT_CODE': 'c9f5d404-1e0f-42d4-9a0d-b17e2e3700c3',
+            # 'MERCHANT_CODE': '92d1635b-4155-4d64-8bdc-87e89755ea6b',
+            'MERCHANT_CODE': '9a668b46-5577-4561-93a8-b24ac3a9d24d',
+            'METHOD': 'POST',  # GET or POST
+            'SANDBOX': 1,  # 0 disable, 1 active
+        },
+        'IDPAY': {
+            'MERCHANT_CODE': 'ced73ac8-9ec9-40e6-aa47-08757df1be16',
+            'METHOD': 'POST',  # GET or POST
+            'X_SANDBOX': 1,  # 0 disable, 1 active
+        },
+    },
+    'IS_SAMPLE_FORM_ENABLE': False,  # disable sample form
+    'DEFAULT': 'IDPAY',  # set IDPay as the default gateway
+    'CURRENCY': 'IRR',  # set the currency
+    'TRACKING_CODE_QUERY_PARAM': 'tc',  # tracking code query parameter
+    'TRACKING_CODE_LENGTH': 16,  # tracking code length
+    'SETTING_VALUE_READER_CLASS': 'azbankgateways.readers.DefaultReader',
+    'BANK_PRIORITIES': [
+        'ZARINPAL',
+    ],  # IDPay priority
+    'IS_SAFE_GET_GATEWAY_PAYMENT': True,  # enable secure payment
+    'CUSTOM_APP': None,  # optional
+}
