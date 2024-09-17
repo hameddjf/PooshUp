@@ -25,40 +25,29 @@ Plus a variety of Python libraries for advanced functionalities!
 ## 📥 Installation
 
 1. Clone the repository:
-git clone https://github.com/hameddjf/PooshUp.git
+git clone `https://github.com/hameddjf/PooshUp.git`
 
-
-Copy
 
 2. Set up virtual environment:
-python -m venv env
-source env/bin/activate
+`python -m venv env`
+`source env/bin/activate`
 
-
-Copy
 
 3. Install dependencies:
-pip install -r requirements.txt
+`pip install -r requirements.txt`
 
-
-Copy
 
 4. Configure database:
 - Install and set up PostgreSQL
 - Update `DATABASES` in `settings.py`
 
 5. Run migrations:
-python manage.py migrate
+`python manage.py migrate`
 
-
-Copy
 
 6. Start the server:
-python manage.py runserver
+`python manage.py runserver`
 
-sql_more
-
-Copy
 
 7. Visit `http://localhost:8000` in your browser 🌐
 
@@ -86,5 +75,5 @@ Got questions? Reach out!
 ---
 
 <p align="center">
-Made with ❤️ by the PooshUp team
+Made with ❤️ by the hameddjf
 </p>
