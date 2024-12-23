@@ -113,18 +113,26 @@ class GoToGatewayView(View):
         user_mobile_number = "+9809931835803"
 
         factory = bankfactories.BankFactory()
+        print('factory',factory)
         try:
             bank = factory.auto_create()
+            print('bank1',bank)
+            
             bank.set_request(request)
 
             # Set the amount to the calculated value
             bank.set_amount(amount)
             bank.set_client_callback_url(reverse('order:order_complete_page'))
             bank.set_mobile_number(user_mobile_number)
+            print('bank2',bank)
 
             bank_record = bank.ready()
+            print('bank_record',bank_record)
+            
             order.bank_record = bank_record
             order.save()
+            print('order',order)
+            
             if settings.IS_SAFE_GET_GATEWAY_PAYMENT:
                 context = bank.get_gateway()
                 return render(request, "redirect_to_bank.html", context=context)

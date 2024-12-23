@@ -191,7 +191,6 @@ class CartView(View):
                 cart_item.variations.set(product_variation)
                 cart_item.save()
             return redirect('cart:cart_page')
-# private function
 
 
 def remove_cart(request, product_id, cart_item_id):

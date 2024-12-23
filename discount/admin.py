@@ -16,8 +16,7 @@ class DiscountAdmin(admin.ModelAdmin):
     def products_display(self, obj):
         product_links = []
         for product in obj.products.all():
-            product_links.append(f'<a href="{product.get_admin_url()}" target="_blank">{
-                                 product.name}</a>')
+            product_links.append(f'<a href="{product.get_admin_url()}" target="_blank">{product.name}</a>')
         return format_html(', '.join(product_links))
     products_display.short_description = 'محصولات'
     products_display.allow_tags = True

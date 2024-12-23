@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'widget_tweaks',
-    'admin_honeypot',
+    # 'admin_honeypot',
     "azbankgateways",
 
     'carts',
@@ -68,8 +68,7 @@ MIDDLEWARE = [
 ]
 
 SESSION_EXPIRE_SECONDS = config('SESSION_EXPIRE_SECONDS', cast=int)  # 1 week
-SESSION_EXPIRE_AFTER_LAST_ACTIVITY = config(
-    'SESSION_EXPIRE_AFTER_LAST_ACTIVITY', cast=bool)
+SESSION_EXPIRE_AFTER_LAST_ACTIVITY = config('SESSION_EXPIRE_AFTER_LAST_ACTIVITY', cast=bool)
 SESSION_TIMEOUT_REDIRECT = config('SESSION_TIMEOUT_REDIRECT')
 
 
@@ -78,7 +77,7 @@ ROOT_URLCONF = 'online_shop.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ['templates'],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

@@ -14,8 +14,7 @@ from carts.models import CartItem
 
 @receiver(post_save, sender=Bank)
 def create_or_update_payment_on_bank_record_change(sender, instance, created, **kwargs):
-    logging.info(f"Bank record {
-                 'created' if created else 'updated'}: {instance.id}")
+    logging.info(f"Bank record {'created' if created else 'updated'}: {instance.id}")
     try:
         order = Order.objects.get(bank_record=instance)
         payment, created = Payment.objects.get_or_create(
@@ -31,15 +30,12 @@ def create_or_update_payment_on_bank_record_change(sender, instance, created, **
             payment.status = 'completed' if instance.is_success else 'failed'
             payment.save()
 
-        logging.info(
-            f"Payment {'created' if created else 'updated'} for order {order.id}")
+        logging.info(f"Payment {'created' if created else 'updated'} for order {order.id}")
 
     except Order.DoesNotExist:
-        logging.error(f"Order not found for bank record {
-                      instance.tracking_code}")
+        logging.error(f"Order not found for bank record {instance.tracking_code}")
     except Exception as e:
-        logging.error(
-            f"Error in create_or_update_payment_on_bank_record_change: {str(e)}")
+        logging.error(f"Error in create_or_update_payment_on_bank_record_change: {str(e)}")
 
 
 @receiver(post_save, sender=Payment)
@@ -51,8 +47,7 @@ def update_order_status(sender, instance, created, **kwargs):
                 order.is_ordered = True
                 order.payment_status = 'completed'
                 order.save()
-                logging.info(
-                    f"Order {order.id} updated based on Payment {instance.id}")
+                logging.info(f"Order {order.id} updated based on Payment {instance.id}")
         except Order.DoesNotExist:
             logging.error(f"Order not found for Payment {instance.id}")
         except Exception as e:
@@ -87,19 +82,16 @@ def create_order_products(sender, instance, **kwargs):
                             product.stock -= item.quantity
                             product.save()
                         else:
-                            raise ValueError(
-                                f"Insufficient stock for product {product.id}")
+                            raise ValueError(f"Insufficient stock for product {product.id}")
 
                         if item.coupon:
                             pass
 
                     # پاک کردن سبد خرید کاربر
                     cart_items.delete()
-                    logging.info(
-                        f"OrderProducts created for Order {instance.id} with bank record {instance.bank_record.id}")
+                    logging.info(f"OrderProducts created for Order {instance.id} with bank record {instance.bank_record.id}")
                 else:
-                    logging.info(
-                        f"OrderProducts already exist for Order {instance.id}")
+                    logging.info(f"OrderProducts already exist for Order {instance.id}")
         except Exception as e:
             logging.error(f"Error in create_order_products: {str(e)}")
     else:
