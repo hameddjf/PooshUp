@@ -1,8 +1,10 @@
+import admin_thumbnails
+
 from django.contrib import admin
+from django.utils.html import format_html
 
 from .models import Product, Variation, ReviewRating, ProductGallery
 
-import admin_thumbnails
 # Register your models here.
 
 # @admin.register()
@@ -14,12 +16,20 @@ class ProductGalleryInline(admin.TabularInline):
     extra = 1
 
 
+@admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('title', 'slug', 'price', 'stock',
+    list_display = ('title', 'product_image', 'price', 'discount_price', 'stock',
                     'category', 'created_date', 'is_available')
     raw_id_fields = ('category',)
     prepopulated_fields = {'slug': ('title',)}
     inlines = [ProductGalleryInline]
+
+    def product_image(self, obj):
+        if obj.image:
+            return format_html('<img src="{}" width="50" height="50" />', obj.image.url)
+        else:
+            return 'No Image'
+    product_image.short_description = 'Image'
 
 
 class VariationAdmin(admin.ModelAdmin):
@@ -30,7 +40,6 @@ class VariationAdmin(admin.ModelAdmin):
                    'variation_value')
 
 
-admin.site.register(Product, ProductAdmin)
 admin.site.register(Variation, VariationAdmin)
 admin.site.register(ReviewRating)
 admin.site.register(ProductGallery)

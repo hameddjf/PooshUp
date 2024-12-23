@@ -4,6 +4,8 @@ from django import template
 
 from connect.views import CreatorView
 from category.models import Category
+from coupons.models import Coupon
+
 
 register = template.Library()
 
@@ -60,3 +62,8 @@ def format_price(value):
 
     formatted_value = ','.join(parts)
     return f"{formatted_value} تومان"
+
+
+@register.filter
+def discount(total_price_without_coupon, total_price_with_coupon):
+    return total_price_without_coupon - total_price_with_coupon

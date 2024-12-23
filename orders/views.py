@@ -1,103 +1,247 @@
-from django.shortcuts import render, redirect
+import logging
+import json
+import requests
+from datetime import date, datetime
+
+from django.urls import reverse
+from django.http import HttpResponse, Http404, JsonResponse
+from django.views import View
+from django.utils import timezone
+from django.shortcuts import redirect, render
+from django.views.generic import TemplateView, View
+from django.utils.translation import gettext_lazy as _
 from django.template.loader import render_to_string
 from django.core.mail import EmailMessage
-from django.http import JsonResponse
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from .forms import OrderForm
 from .models import Order, OrderProduct, Payment
-from carts.models import CartItem
-from store.models import Product
 
-import json
-from datetime import date
+from coupons.models import Coupon
+from carts.models import CartItem, Cart
+from store.models import Product
+from coupons.templatetags.coupon_utils import OrderProductPriceCalculator
+
+
+from azbankgateways.exceptions import AZBankGatewaysException
+from azbankgateways import (
+    bankfactories,
+    models as bank_models,
+    default_settings as settings,
+)
+
 # Create your views here.
 
 
-def payments(request):
-    body = json.loads(request.body)
-    order = Order.objects.get(
-        user=request.user, is_ordered=False, order_number=body['orderID'])
+class PaymentView(View):
+    def post(self, request):
+        order = Order.objects.create(
+            user=request.user,
+            amount=request.POST.get('amount'),
+            order_number=request.POST.get('order_number'),
+            # سایر اطلاعات سفارش
+        )
+        amount = order.amount
+        factory = bankfactories.BankFactory()
+        try:
+            bank = factory.auto_create()
+            bank.set_request(request)
+            bank.set_amount(amount)
+            bank.set_client_callback_url(reverse('callback-gateway'))
+            bank.set_mobile_number(request.user.phone_number)
 
-    # STORE trasection details inside payment model
-    payment = Payment(
-        user=request.user,
-        payment_id=body['transID'],
-        payment_method=body['payment_method'],
-        amount_paid=order.order_total,
-        status=body['status'],
-    )
-    payment.save()
+            bank_record = bank.ready()
 
-    order.payment = payment
-    order.is_ordered = True
-    order.save()
-    # move cart items to order product table
-    cart_items = CartItem.objects.filter(user=request.user)
+            if bank_record.is_success:
+                order.bank_record = bank_record
+                order.save()
 
-    for item in cart_items:
-        orderproduct = OrderProduct()
-        orderproduct.order_id = order.id
-        orderproduct.payment = payment
-        orderproduct.user_id = request.user.id
-        orderproduct.product_id = item.product_id
-        orderproduct.quantity = item.quantity
-        orderproduct.variations = item.variations
-        orderproduct.product_price = item.product.price
-        orderproduct.ordered = True
-        orderproduct.save()
+                # ایجاد پرداخت
+                payment = Payment.objects.create(
+                    user=request.user,
+                    order=order,
+                    bank_record=bank_record
+                )
 
-        cart_item = CartItem.objects.get(id=item.id)
-        product_variation = cart_item.variations.all()
-        orderproduct = OrderProduct.objects.get(id=orderproduct.id)
-        orderproduct.variations.set(product_variation)
+                return bank.redirect_gateway()
+            else:
+                order.payment_status = 'failed'
+                order.save()
+                return HttpResponse("خطا در شروع فرآیند پرداخت.")
 
-        # reduce quantity of sold products
-        product = Product.objects.get(id=item.product_id)
-        product.stock -= item.quantity
-        product.save()
-
-    # clear cart
-    CartItem.objects.filter(user=request.user).delete()
-
-    # send order recieved email to customer
-    mail_subject = 'ممنون ک مارو برا خریدتون انتخاب کردین.'
-    message = render_to_string(
-        'orderes/ordered_recieved_email.html',
-        {
-            'user': request.user,
-            'domain': order,
-        })
-    to_email = request.user.email
-    send_email = EmailMessage(mail_subject, message, to=[to_email])
-    send_email.send()
-
-    # send order num & transaction id back to dendData method via jsonresponse
-    data = {
-        'order_number': order.order_number,
-        'transID': payment.payment_id,
-    }
-    return JsonResponse(data)
+        except AZBankGatewaysException as e:
+            order.payment_status = 'failed'
+            order.save()
+            logging.critical(str(e))
+            return HttpResponse("خطا در شروع فرآیند پرداخت.")
 
 
-def place_order(request, total=0, quantity=0):
-    current_user = request.user
+class PaymentCallbackView(View):
+    def get(self, request):
+        tracking_code = request.GET.get(
+            settings.TRACKING_CODE_QUERY_PARAM, None)
+        if not tracking_code:
+            return HttpResponse("لینک نامعتبر است.", status=404)
 
-    # if the cart count is less than or equal to 0, then redirect back to shop
+        try:
+            bank_record = Bank.objects.get(tracking_code=tracking_code)
+        except Bank.DoesNotExist:
+            return HttpResponse("لینک نامعتبر است.", status=404)
 
-    cart_items = CartItem.objects.filter(user=current_user)
-    cart_count = cart_items.count()
-    if cart_count <= 0:
-        return redirect('store')
+        if bank_record.is_success:
+            try:
+                payment = Payment.objects.get(bank_record=bank_record)
+                order = payment.order
+                return redirect('order:order_complete_page', order_number=order.order_number, transID=bank_record.tracking_code)
+            except Payment.DoesNotExist:
+                logging.error("پرداخت مربوط به این رکورد بانکی یافت نشد.")
+                return HttpResponse("پرداخت یافت نشد.", status=404)
+        else:
+            return HttpResponse("پرداخت ناموفق بود. اگر مبلغی کسر شده است، ظرف 48 ساعت بازگردانده خواهد شد.")
 
-    grand_total = 0
-    tax = 0
-    for cart_item in cart_items:
-        total += (cart_item.product.price * cart_item.quantity)
-        quantity += cart_item.quantity
-    tax = (2 * total)/100
-    grand_total = total + tax
 
-    if request.method == 'POST':
+class GoToGatewayView(View):
+    def get(self, request):
+        # Read the amount from the PlaceOrderView
+        order = Order.objects.filter(
+            user=request.user, is_ordered=False).last()
+        if order:
+            amount = order.grand_total
+        else:
+            amount = 1000000
+
+        user_mobile_number = "+9809931835803"
+
+        factory = bankfactories.BankFactory()
+        try:
+            bank = factory.auto_create()
+            bank.set_request(request)
+
+            # Set the amount to the calculated value
+            bank.set_amount(amount)
+            bank.set_client_callback_url(reverse('order:order_complete_page'))
+            bank.set_mobile_number(user_mobile_number)
+
+            bank_record = bank.ready()
+            order.bank_record = bank_record
+            order.save()
+            if settings.IS_SAFE_GET_GATEWAY_PAYMENT:
+                context = bank.get_gateway()
+                return render(request, "redirect_to_bank.html", context=context)
+            else:
+                return bank.redirect_gateway()
+        except AZBankGatewaysException as e:
+            logging.critical(f"AZBankGatewaysException: {e}")
+            return self.handle_exception(e, request)
+        except Exception as e:
+            logging.critical(f"General Exception: {e}")
+            return self.handle_exception(e, request)
+
+        # Redirect the user to the order complete page
+        return redirect('order:order_complete_page', order_number=order.order_number, transID=payment.payment_id)
+
+    def handle_exception(self, exception, request):
+        if settings.IS_SAFE_GET_GATEWAY_PAYMENT:
+            return render(request, "redirect_to_bank.html", {'error': str(exception)})
+        else:
+            raise exception
+
+
+# order_complete view
+class OrderCompleteView(LoginRequiredMixin, View):
+    login_url = 'account:login_page'
+
+    def get(self, request):
+        transID = request.GET.get('transID')
+
+        try:
+            payment = Payment.objects.get(bank_record__tracking_code=transID)
+            order = payment.order
+
+            # if payment.bank_record.is_success and payment.status != 'completed':
+            #     # payment
+            #     payment.status = 'completed'
+            #     payment.save()
+
+            #     # order
+            #     order.is_ordered = True
+            #     order.save()
+
+            if order.user != request.user:
+                return redirect('account:my_orders_page')
+
+            ordered_products = OrderProduct.objects.filter(order_id=order.id)
+
+            # محاسبه مجموع قیمت برای هر آیتم
+            for item in ordered_products:
+                item.total_price = item.product_price * item.quantity
+
+            subtotal = sum(item.total_price for item in ordered_products)
+
+            context = {
+                'order': order,
+                'ordered_products': ordered_products,
+                'order_number': order.order_number,
+                'transID': payment.bank_record.tracking_code,
+                'payment': payment,
+                'subtotal': subtotal,
+                'bank_name': payment.bank_record.bank_type,
+                'tracking_code': payment.bank_record.tracking_code,
+                'amount': payment.bank_record.amount,
+                'reference': payment.bank_record.reference_number,
+                'bank_result': payment.bank_record.result,
+                'callback_url': payment.bank_record.callback_url,
+                'description': payment.bank_record.extra_information,
+                'gateway_id': payment.bank_record.id,
+                'created_at': payment.bank_record.created_at,
+                'updated_at': payment.bank_record.updated_at,
+            }
+            return render(request, 'orders/order_complete.html', context)
+
+        except Payment.DoesNotExist:
+            logging.error(f"Payment not found for transID: {transID}")
+            return redirect('account:my_orders_page')
+        except Exception as e:
+            logging.error(f"Error in OrderCompleteView: {str(e)}")
+            return redirect('account:my_orders_page')
+
+
+class PlaceOrderView(View):
+
+    def get(self, request):
+        current_user = request.user
+
+        # if the cart count is less than or equal to 0, then redirect back to shop
+        cart_items = CartItem.objects.filter(user=current_user)
+        cart_count = cart_items.count()
+        if cart_count <= 0:
+            return redirect('store')
+        for cart_item in cart_items:
+            total += (cart_item.product.discount_price *
+                      cart_item.quantity if cart_item.product.discount_price else cart_item.product.price * cart_item.quantity)
+            quantity += cart_item.quantity
+        tax = (2 * total_price) / 100
+        grand_total = total + tax
+        order_total = total
+
+        context = {
+            'total_price': total,
+            'quantity': cart_items.count(),
+            'cart_items': cart_items,
+            'tax': tax,
+            'grand_total': total_price_with_coupon + tax,
+            'order_total': total_price_with_coupon,
+        }
+        return render(request, 'orders/payments.html', context)
+
+    def post(self, request):
+        current_user = request.user
+        cart_items = CartItem.objects.filter(user=current_user)
+        total_price = self.calculate_total_price(cart_items)
+        tax = (2 * total_price) / 100
+        grand_total = total_price + tax
+        order_total = total_price
+
         form = OrderForm(request.POST)
         if form.is_valid():
             data = Order()
@@ -112,18 +256,14 @@ def place_order(request, total=0, quantity=0):
             data.city = form.cleaned_data['city']
             data.street = form.cleaned_data['street']
             data.tag = form.cleaned_data['tag']
-            data.order_total = grand_total
+            data.order_total = total_price
             data.tax = tax
+            data.grand_total = total_price + tax
             data.ip = request.META.get('REMOTE_ADDR',)
             data.save()
 
             # Generate order number
-            yr = int(date.today().strftime('%Y'))
-            dt = int(date.today().strftime('%d'))
-            mt = int(date.today().strftime('%m'))
-            d = date(yr, mt, dt)
-            current_date = d.strftime('%Y%m%d')
-            order_number = current_date + str(data.id)
+            order_number = self.generate_order_number(data)
             data.order_number = order_number
             data.save()
 
@@ -132,39 +272,27 @@ def place_order(request, total=0, quantity=0):
             context = {
                 'order': order,
                 'cart_items': cart_items,
-                'total': total,
+                'total_price': order_total,
                 'tax': tax,
                 'grand_total': grand_total,
-
+                'order_total': order_total,
             }
-            return render(request, 'orders/payments.html', context)
-
+            return render(request, 'orders/payments.html', context,)
         else:
             return redirect('cart:checkout_page')
 
+    def calculate_total_price(self, cart_items):
+        total_price = 0
+        for cart_item in cart_items:
+            total_price += (cart_item.product.discount_price *
+                            cart_item.quantity if cart_item.product.discount_price else cart_item.product.price * cart_item.quantity)
+        return total_price
 
-def order_complete(request):
-    order_number = request.GET.get('order_number')
-    transID = request.GET.get('payment_id')
-
-    try:
-        order = Order.objects.get(order_number=order_number, is_ordered=True)
-        ordered_products = OrderProduct.objects.filter(order_id=order.id)
-
-        subtotal = 0
-        for i in ordered_products:
-            subtotal += i.product_price * i.quantity
-
-        payment = Payment.objects.get(payment_id=transID)
-
-        context = {
-            'order': order,
-            'ordered_products': ordered_products,
-            'order_number': order.order_number,
-            'transID': payment.payment_id,
-            'payment': payment,
-            'subtotal': subtotal,
-        }
-        return render(request, 'orders/order_complete.html', context)
-    except Exception:
-        return redirect('home')
+    def generate_order_number(self, data):
+        yr = int(date.today().strftime('%Y'))
+        dt = int(date.today().strftime('%d'))
+        mt = int(date.today().strftime('%m'))
+        d = date(yr, mt, dt)
+        current_date = d.strftime('%Y%m%d')
+        order_number = current_date + str(data.id)
+        return order_number
